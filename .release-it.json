@@ -1,0 +1,15 @@
+{
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "infile": "CHANGELOG.md",
+      "preset": "conventionalcommits",
+      "ignoreRecommendedBump": false
+    }
+  },
+  "git": {
+    "commitMessage": "chore: release v${version}"
+  },
+  "npm": {
+    "publish": false
+  }
+}
