@@ -17,13 +17,16 @@ function instanceOfMethodDefinition(object: any): object is MethodDefinition<obj
   return 'requestType' in object;
 }
 
+/**
+ * ProtobufLoader used for load package definition from file.
+ */
 export class ProtobufLoader extends AbstractLoader {
   constructor(public readonly path: string, public readonly options?: ProtoLoader.Options) {
     super();
   }
 
-  public async load(): Promise<GrpcServiceDefinition[]> {
-    const ast = await ProtoLoader.load(this.path, {
+  public async load(): Promise<void> {
+    this.packageDefinition = await ProtoLoader.load(this.path, {
       keepCase: true,
       defaults: true,
       includeDirs: [],
@@ -31,7 +34,7 @@ export class ProtobufLoader extends AbstractLoader {
       ...this.options,
     });
 
-    return this.parse(ast);
+    this.services = this.parse(this.packageDefinition);
   }
 
   private parse(ast: PackageDefinition): GrpcServiceDefinition[] {

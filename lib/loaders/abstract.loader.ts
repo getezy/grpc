@@ -1,5 +1,35 @@
+import type { PackageDefinition } from '@grpc/proto-loader';
+
 import { GrpcServiceDefinition } from './interfaces';
 
+/**
+ * AbstractLoader used for loading package definition from giving source.
+ */
 export abstract class AbstractLoader {
-  public abstract load(): Promise<GrpcServiceDefinition[]>;
+  protected services?: GrpcServiceDefinition[];
+
+  protected packageDefinition?: PackageDefinition;
+
+  /**
+   * Returns grpc service definitions
+   */
+  public getServices() {
+    return this.services;
+  }
+
+  /**
+   * Returns package definition from '@grpc/proto-loader'
+   */
+  public getPackageDefinition() {
+    if (this.packageDefinition) {
+      return this.packageDefinition;
+    }
+
+    throw new Error('Package definition is undefined, please load it first.');
+  }
+
+  /**
+   * Loads PackageDefinition from source
+   */
+  public abstract load(): Promise<void>;
 }

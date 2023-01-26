@@ -8,6 +8,7 @@
     "lib/**/*"
   ],
   "compilerOptions": {
+    "baseUrl": "./",
     "outDir": "dist",
     "module": "esnext",
     "target": "esnext",
@@ -26,6 +27,12 @@
     "esModuleInterop": true,
 
     "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+
+    "paths": {
+      "@client": ["./lib/client/index.ts"],
+      "@protocols": ["./lib/protocols/index.ts"],
+      "@loaders": ["./lib/loaders/index.ts"]
+    }
   }
 }

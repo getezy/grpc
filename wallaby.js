@@ -8,4 +8,6 @@ module.exports = () => ({
   env: {
     type: 'node',
   },
+
+  testFramework: 'jest',
 });

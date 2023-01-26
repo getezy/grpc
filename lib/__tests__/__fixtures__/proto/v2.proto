@@ -1,14 +1,17 @@
-syntax = "proto3";
+syntax = "proto2";
 
 package simple_package.v1;
 
-// ! SimpleMessage is undefined here
-// message SimpleMessage {
-//   string id = 1;
-// }
+import "google/protobuf/empty.proto";
+
+message SimpleMessage {
+  required string id = 1;
+}
 
 service SimpleService {
-  rpc SimpleUnaryRequest(SimpleMessage) returns (google.protobuf.Empty);
+  rpc SimpleUnaryRequest(SimpleMessage) returns (SimpleMessage);
+
+  rpc SimpleUnaryRequestWithError(SimpleMessage) returns (SimpleMessage);
 
   rpc SimpleClientStreamRequest(stream SimpleMessage) returns (SimpleMessage);
 

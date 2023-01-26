@@ -31,6 +31,7 @@ module.exports = {
     ],
 
     'no-plusplus': 'off',
+    'class-methods-use-this': 'off',
 
     'import/prefer-default-export': 'off',
     'import/no-extraneous-dependencies': 'error',
@@ -38,7 +39,7 @@ module.exports = {
     'simple-import-sort/imports': [
       'error',
       {
-        groups: [['^\\u0000'], ['^[^.]'], ['^\\.']],
+        groups: [['^\\u0000'], ['^[^.]'], ['^@(client|protocols|loaders)'], ['^\\.']],
       },
     ],
   },

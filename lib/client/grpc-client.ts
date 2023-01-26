@@ -1,11 +1,34 @@
-import { AbstractLoader, GrpcServiceDefinition } from '../loaders';
+import type { MetadataValue } from '@grpc/grpc-js';
+
+import { AbstractLoader } from '@loaders';
+import {
+  AbstractProtocol,
+  GrpcRequestOptions,
+  GrpcRequestValue,
+  GrpcResponse,
+  GrpcResponseValue,
+} from '@protocols';
 
 export class GrpcClient {
-  public definition: GrpcServiceDefinition[] = [];
+  constructor(
+    private readonly loader: AbstractLoader,
+    private readonly protocol: AbstractProtocol
+  ) {}
 
-  constructor(private readonly loader: AbstractLoader) {}
+  async init() {
+    await this.loader.load();
+  }
 
-  public async load() {
-    this.definition = await this.loader.load();
+  public invokeUnaryRequest<
+    Request extends GrpcRequestValue = GrpcRequestValue,
+    Response extends GrpcResponseValue = GrpcResponseValue
+  >(
+    options: GrpcRequestOptions,
+    request: Request,
+    metadata?: Record<string, MetadataValue>
+  ): Promise<GrpcResponse<Response>> {
+    const packageDefinition = this.loader.getPackageDefinition();
+
+    return this.protocol.invokeUnaryRequest(packageDefinition, options, request, metadata);
   }
 }

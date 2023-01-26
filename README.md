@@ -1,6 +1,6 @@
 # @getezy/grpc-client
 
-Universal gRPC/gRPC-Web client library used in [ezy](https://github.com/getezy/ezy).
+Universal, extendable gRPC/gRPC-Web client library used in [ezy](https://github.com/getezy/ezy).
 
 # Install
 
@@ -11,9 +11,9 @@ npm install @getezy/grpc-client
 # Usage
 
 ```ts
-import { GrpcClient } from '@getezy/grpc-client';
+import { GrpcClient, GrpcProtocol, ProtobufLoader } from '@getezy/grpc-client';
 
-const client = new GrpcClient()
+const client = new GrpcClient(new ProtobufLoader(), new GrpcProtocol())
 ```
 
 ## Loaders
@@ -46,11 +46,11 @@ const definition = await loader.load();
 
 ### ReflectionLoader
 
-ReflectionLoader is coming soon.
+Loader by reflection API is coming soon.
 
 ### Custom loader
 
-You can write custom loader implementation by extendind from `AbstractLoader` imported from `@getezy/grpc-client`.
+You can write custom loader implementation by extending `AbstractLoader` class imported from `@getezy/grpc-client`.
 
 ```ts
 import { AbstractLoader, GrpcServiceDefinition } from '@getezy/grpc-client';
@@ -70,7 +70,7 @@ class CustomLoader extends AbstractLoader {
 
 ### Custom protocol
 
-You can write custom protocol implementation by extendind from `AbstractProtocol` imported from `@getezy/grpc-client`.
+You can write custom protocol implementation by extending `AbstractProtocol` class imported from `@getezy/grpc-client`.
 
 ```ts
 import { AbstractProtocol } from '@getezy/grpc-client';

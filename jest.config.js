@@ -18,6 +18,8 @@ const config = {
 
   moduleFileExtensions: ['js', 'ts'],
   testEnvironment: 'node',
+  testPathIgnorePatterns: ['<rootDir>/__tests__/__utils__/'],
+  coveragePathIgnorePatterns: ['<rootDir>/__tests__/__utils__/'],
   testRegex: '.spec.ts$',
   transform: {
     '.+\\.(t|j)s$': [
@@ -26,6 +28,11 @@ const config = {
         tsconfig: 'tsconfig.json',
       },
     ],
+  },
+  moduleNameMapper: {
+    '@loaders': '<rootDir>/loaders/index.ts',
+    '@protocols': '<rootDir>/protocols/index.ts',
+    '@client': '<rootDir>/client/index.ts',
   },
   ...(process.env.CI === 'true' ? coverage : {}),
 };
