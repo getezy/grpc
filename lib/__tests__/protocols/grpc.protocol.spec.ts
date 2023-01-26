@@ -8,41 +8,14 @@ import { GrpcProtocol, GrpcStatus, GrpcTlsType } from '@protocols';
 
 import { Certificates, loadCertificates } from '../__utils__';
 
-function createSimpleService() {
-  const SimpleService = jest.fn(() => ({
-    SimpleUnaryRequest: jest.fn((payload, _metadata, callback) => {
-      callback(null, payload);
-    }),
-    SimpleUnaryRequestWithError: jest.fn((payload, _metadata, callback) => {
-      const error = {
-        code: GrpcStatus.ABORTED,
-        details: 'details',
-        metadata: new grpc.Metadata(),
-      };
-      callback(error, payload);
-    }),
-    // SimpleServerStreamRequest: jest.fn(() => new ClientReadableStreamImpl(jest.fn())),
-  }));
-
-  // @ts-ignore
-  SimpleService.serviceName = 'simple_package.v1.SimpleService';
-
-  return {
-    'simple_package.v1.SimpleService': SimpleService,
-  };
-}
-
 describe('GrpcProtocol', () => {
   describe('GrpcProtocol:TLS', () => {
     let loader: ProtobufLoader;
-    let SimpleService: any;
-
     let certificates: Certificates;
 
     beforeAll(async () => {
-      SimpleService = createSimpleService();
       // @ts-ignore
-      grpc.__setPackageDefinition(SimpleService);
+      grpc.__setSimpleServicePackageDefinition();
 
       loader = new ProtobufLoader(path.join(__dirname, '../__fixtures__/proto/v3.proto'));
 
@@ -177,9 +150,9 @@ describe('GrpcProtocol', () => {
     let SimpleService: any;
 
     beforeAll(async () => {
-      SimpleService = createSimpleService();
       // @ts-ignore
-      grpc.__setPackageDefinition(SimpleService);
+      const { PACKAGE_DEFINITION_MOCK } = grpc.__setSimpleServicePackageDefinition();
+      SimpleService = PACKAGE_DEFINITION_MOCK;
 
       protocol = new GrpcProtocol({
         address: '10.10.10.10',
@@ -213,16 +186,21 @@ describe('GrpcProtocol', () => {
   describe('GrpcProtocol:UnaryRequest', () => {
     let protocol: GrpcProtocol;
     let loader: ProtobufLoader;
+    let SimpleUnaryRequest: any;
 
     beforeAll(async () => {
-      const SimpleService = createSimpleService();
       // @ts-ignore
-      grpc.__setPackageDefinition(SimpleService);
+      const { SimpleUnaryRequest: UnaryRequest } = grpc.__setSimpleServicePackageDefinition();
+      SimpleUnaryRequest = UnaryRequest;
 
       protocol = new GrpcProtocol({ address: '10.10.10.10', tls: { type: GrpcTlsType.INSECURE } });
       loader = new ProtobufLoader(path.join(__dirname, '../__fixtures__/proto/v3.proto'));
 
       await loader.load();
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
     });
 
     it('should throw error if service not found in package definition', async () => {
@@ -245,7 +223,7 @@ describe('GrpcProtocol', () => {
       ).toThrowError(`Method "Test" not found in package definition`);
     });
 
-    it('should invoke unary request', async () => {
+    it('should invoke unary request without metadata', async () => {
       const response = await protocol.invokeUnaryRequest(
         loader.getPackageDefinition(),
         { service: 'simple_package.v1.SimpleService', method: 'SimpleUnaryRequest' },
@@ -261,12 +239,89 @@ describe('GrpcProtocol', () => {
           id: '962af482-13c2-4084-a1fe-4eb135378d67',
         },
       });
+
+      expect(SimpleUnaryRequest).toBeCalledTimes(1);
+      expect(SimpleUnaryRequest).toBeCalledWith(
+        { id: '962af482-13c2-4084-a1fe-4eb135378d67' },
+        new grpc.Metadata(),
+        expect.anything()
+      );
     });
 
-    it('should handle unary request error', async () => {
+    it('should invoke unary request with metadata', async () => {
       const response = await protocol.invokeUnaryRequest(
         loader.getPackageDefinition(),
-        { service: 'simple_package.v1.SimpleService', method: 'SimpleUnaryRequestWithError' },
+        { service: 'simple_package.v1.SimpleService', method: 'SimpleUnaryRequest' },
+        {
+          id: '962af482-13c2-4084-a1fe-4eb135378d67',
+        },
+        {
+          'x-access-token': 'token',
+        }
+      );
+
+      expect(response).toStrictEqual({
+        code: GrpcStatus.OK,
+        timestamp: 0,
+        value: {
+          id: '962af482-13c2-4084-a1fe-4eb135378d67',
+        },
+      });
+
+      expect(SimpleUnaryRequest).toBeCalledTimes(1);
+
+      const metadata = new grpc.Metadata();
+      metadata.set('x-access-token', 'token');
+
+      expect(SimpleUnaryRequest).toBeCalledWith(
+        { id: '962af482-13c2-4084-a1fe-4eb135378d67' },
+        metadata,
+        expect.anything()
+      );
+    });
+
+    it('should handle unary request error without error code', async () => {
+      // @ts-ignore
+      grpc.__setSimpleServicePackageDefinition({
+        simpleUnaryRequest: [
+          {
+            details: 'details',
+          },
+        ],
+      });
+
+      const response = await protocol.invokeUnaryRequest(
+        loader.getPackageDefinition(),
+        { service: 'simple_package.v1.SimpleService', method: 'SimpleUnaryRequest' },
+        {
+          id: '962af482-13c2-4084-a1fe-4eb135378d67',
+        }
+      );
+
+      expect(response).toStrictEqual({
+        code: GrpcStatus.UNKNOWN,
+        timestamp: 0,
+        value: {
+          details: 'details',
+          metadata: undefined,
+        },
+      });
+    });
+
+    it('should handle unary request error with error code', async () => {
+      // @ts-ignore
+      grpc.__setSimpleServicePackageDefinition({
+        simpleUnaryRequest: [
+          {
+            code: GrpcStatus.ABORTED,
+            details: 'details',
+          },
+        ],
+      });
+
+      const response = await protocol.invokeUnaryRequest(
+        loader.getPackageDefinition(),
+        { service: 'simple_package.v1.SimpleService', method: 'SimpleUnaryRequest' },
         {
           id: '962af482-13c2-4084-a1fe-4eb135378d67',
         }
@@ -277,7 +332,7 @@ describe('GrpcProtocol', () => {
         timestamp: 0,
         value: {
           details: 'details',
-          metadata: {},
+          metadata: undefined,
         },
       });
     });

@@ -6,7 +6,6 @@ const SERVICES_MOCK = [
   {
     methods: [
       { name: 'SimpleUnaryRequest', type: GrpcMethodType.UNARY },
-      { name: 'SimpleUnaryRequestWithError', type: GrpcMethodType.UNARY },
       { name: 'SimpleClientStreamRequest', type: GrpcMethodType.CLIENT_STREAMING },
       { name: 'SimpleServerStreamRequest', type: GrpcMethodType.SERVER_STREAMING },
       { name: 'SimpleBidirectionalStreamRequest', type: GrpcMethodType.BIDIRECTIONAL_STREAMING },
