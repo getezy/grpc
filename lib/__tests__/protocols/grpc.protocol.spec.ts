@@ -460,4 +460,131 @@ describe('GrpcProtocol', () => {
       expect(SimpleClientStreamRequest).toBeCalledWith(new grpc.Metadata(), expect.anything());
     });
   });
+
+  describe('GrpcProtocol:ServerrStreamingRequest', () => {
+    let protocol: GrpcProtocol;
+    let loader: ProtobufLoader;
+    let SimpleServerStreamRequest: any;
+
+    beforeAll(async () => {
+      const { SimpleServerStreamRequest: ServerStreamRequest } =
+        // @ts-ignore
+        grpc.__setSimpleServicePackageDefinition();
+      SimpleServerStreamRequest = ServerStreamRequest;
+
+      protocol = new GrpcProtocol({ address: '10.10.10.10', tls: { type: GrpcTlsType.INSECURE } });
+      loader = new ProtobufLoader(path.join(__dirname, '../__fixtures__/proto/v3.proto'));
+
+      await loader.load();
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should invoke server streaming request without metadata', async () => {
+      const call = protocol.invokeServerStreamingRequest(
+        loader.getPackageDefinition(),
+        {
+          service: 'simple_package.v1.SimpleService',
+          method: 'SimpleServerStreamRequest',
+        },
+        { id: '962af482-13c2-4084-a1fe-4eb135378d67' }
+      );
+
+      expect(call.on).toBeDefined();
+
+      expect(SimpleServerStreamRequest).toBeCalledTimes(1);
+      expect(SimpleServerStreamRequest).toBeCalledWith(
+        { id: '962af482-13c2-4084-a1fe-4eb135378d67' },
+        new grpc.Metadata()
+      );
+    });
+
+    it('should invoke server streaming request with metadata', async () => {
+      const call = protocol.invokeServerStreamingRequest(
+        loader.getPackageDefinition(),
+        {
+          service: 'simple_package.v1.SimpleService',
+          method: 'SimpleServerStreamRequest',
+        },
+        { id: '962af482-13c2-4084-a1fe-4eb135378d67' },
+        {
+          'x-access-token': 'token',
+        }
+      );
+
+      expect(call.on).toBeDefined();
+
+      expect(SimpleServerStreamRequest).toBeCalledTimes(1);
+
+      const metadata = new grpc.Metadata();
+      metadata.set('x-access-token', 'token');
+
+      expect(SimpleServerStreamRequest).toBeCalledWith(
+        { id: '962af482-13c2-4084-a1fe-4eb135378d67' },
+        metadata
+      );
+    });
+  });
+
+  describe('GrpcProtocol:BidirectionalStreamRequest', () => {
+    let protocol: GrpcProtocol;
+    let loader: ProtobufLoader;
+    let SimpleBidirectionalStreamRequest: any;
+
+    beforeAll(async () => {
+      const { SimpleBidirectionalStreamRequest: BidirectionalStreamRequest } =
+        // @ts-ignore
+        grpc.__setSimpleServicePackageDefinition();
+      SimpleBidirectionalStreamRequest = BidirectionalStreamRequest;
+
+      protocol = new GrpcProtocol({ address: '10.10.10.10', tls: { type: GrpcTlsType.INSECURE } });
+      loader = new ProtobufLoader(path.join(__dirname, '../__fixtures__/proto/v3.proto'));
+
+      await loader.load();
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should invoke bidirectional streaming request without metadata', async () => {
+      const call = protocol.invokeBidirectionalStreamingRequest(loader.getPackageDefinition(), {
+        service: 'simple_package.v1.SimpleService',
+        method: 'SimpleBidirectionalStreamRequest',
+      });
+
+      expect(call.on).toBeDefined();
+      expect(call.emit).toBeDefined();
+      expect(call.write).toBeDefined();
+
+      expect(SimpleBidirectionalStreamRequest).toBeCalledTimes(1);
+      expect(SimpleBidirectionalStreamRequest).toBeCalledWith(new grpc.Metadata());
+    });
+
+    it('should invoke bidirectional streaming request with metadata', async () => {
+      const call = protocol.invokeBidirectionalStreamingRequest(
+        loader.getPackageDefinition(),
+        {
+          service: 'simple_package.v1.SimpleService',
+          method: 'SimpleBidirectionalStreamRequest',
+        },
+        {
+          'x-access-token': 'token',
+        }
+      );
+
+      expect(call.on).toBeDefined();
+      expect(call.emit).toBeDefined();
+      expect(call.write).toBeDefined();
+
+      expect(SimpleBidirectionalStreamRequest).toBeCalledTimes(1);
+
+      const metadata = new grpc.Metadata();
+      metadata.set('x-access-token', 'token');
+
+      expect(SimpleBidirectionalStreamRequest).toBeCalledWith(metadata);
+    });
+  });
 });

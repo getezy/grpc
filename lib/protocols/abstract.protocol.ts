@@ -1,6 +1,6 @@
 import type { MetadataValue } from '@grpc/grpc-js';
 import type { PackageDefinition } from '@grpc/proto-loader';
-import { Writable } from 'node:stream';
+import { Duplex, Readable, Writable } from 'node:stream';
 
 import {
   AbstractProtocolOptions,
@@ -33,11 +33,18 @@ export abstract class AbstractProtocol {
     metadata?: Record<string, MetadataValue>
   ): Writable;
 
-  // public abstract invokeServerStreamingRequest(
-  //   packageDefinition: PackageDefinition
-  // ): Promise<GrpcResponse>;
+  // TODO: add types for stream "on" handlers
+  public abstract invokeServerStreamingRequest<Request extends GrpcRequestValue = GrpcRequestValue>(
+    packageDefinition: PackageDefinition,
+    requestOptions: GrpcRequestOptions,
+    payload: Request,
+    metadata?: Record<string, MetadataValue>
+  ): Readable;
 
-  // public abstract invokeBidirectionalStreamingRequest(
-  //   packageDefinition: PackageDefinition
-  // ): Promise<GrpcResponse>;
+  // TODO: add types for stream "on" handlers
+  public abstract invokeBidirectionalStreamingRequest(
+    packageDefinition: PackageDefinition,
+    requestOptions: GrpcRequestOptions,
+    metadata?: Record<string, MetadataValue>
+  ): Duplex;
 }

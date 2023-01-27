@@ -2,7 +2,7 @@
 /* eslint-disable no-underscore-dangle */
 
 import type { PackageDefinition } from '@grpc/proto-loader';
-import { Writable } from 'node:stream';
+import { Duplex, Readable, Writable } from 'node:stream';
 
 import { GrpcResponse } from '@protocols';
 
@@ -38,9 +38,21 @@ export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMock
     return stream;
   });
 
+  const SimpleServerStreamRequest = jest.fn(() => {
+    const stream = new Readable();
+    return stream;
+  });
+
+  const SimpleBidirectionalStreamRequest = jest.fn(() => {
+    const stream = new Duplex();
+    return stream;
+  });
+
   const SimpleService = jest.fn(() => ({
     SimpleUnaryRequest,
     SimpleClientStreamRequest,
+    SimpleServerStreamRequest,
+    SimpleBidirectionalStreamRequest,
   }));
 
   // @ts-ignore
@@ -55,6 +67,8 @@ export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMock
     PACKAGE_DEFINITION_MOCK,
     SimpleUnaryRequest,
     SimpleClientStreamRequest,
+    SimpleServerStreamRequest,
+    SimpleBidirectionalStreamRequest,
   };
 };
 

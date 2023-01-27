@@ -1,6 +1,8 @@
 import type {
   ChannelCredentials,
   ChannelOptions,
+  ClientDuplexStream,
+  ClientReadableStream,
   ClientWritableStream,
   MetadataValue,
   ServerErrorResponse,
@@ -9,6 +11,7 @@ import * as grpc from '@grpc/grpc-js';
 import type { PackageDefinition } from '@grpc/proto-loader';
 import lodashGet from 'lodash.get';
 import * as fs from 'node:fs';
+import { Duplex } from 'node:stream';
 
 import {
   AbstractProtocol,
@@ -100,6 +103,40 @@ export class GrpcProtocol extends AbstractProtocol {
     );
 
     return call;
+  }
+
+  public invokeServerStreamingRequest<
+    Request extends GrpcRequestValue = GrpcRequestValue,
+    Response extends GrpcResponseValue = GrpcResponseValue
+  >(
+    packageDefinition: PackageDefinition,
+    requestOptions: GrpcRequestOptions,
+    payload: Request,
+    metadata?: Record<string, MetadataValue>
+  ) {
+    const client = this.createClient(packageDefinition, requestOptions);
+
+    const call: ClientReadableStream<Response> = client[requestOptions.method](
+      payload,
+      metadata ? MetadataParser.parse(metadata) : new grpc.Metadata()
+    );
+
+    return call;
+  }
+
+  public invokeBidirectionalStreamingRequest(
+    packageDefinition: PackageDefinition,
+    requestOptions: GrpcRequestOptions,
+    metadata?: Record<string, MetadataValue>
+  ) {
+    const client = this.createClient(packageDefinition, requestOptions);
+
+    const call: ClientDuplexStream<Request, Response> = client[requestOptions.method](
+      metadata ? MetadataParser.parse(metadata) : new grpc.Metadata()
+    );
+
+    // TODO: rewrite
+    return call as unknown as Duplex;
   }
 
   private createClient(packageDefinition: PackageDefinition, requestOptions: GrpcRequestOptions) {
