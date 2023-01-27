@@ -2,6 +2,7 @@
 /* eslint-disable no-underscore-dangle */
 
 import type { PackageDefinition } from '@grpc/proto-loader';
+import { Writable } from 'node:stream';
 
 import { GrpcResponse } from '@protocols';
 
@@ -14,22 +15,32 @@ export const __setPackageDefinition = (packageDefinition: PackageDefinition) => 
 };
 
 interface SimpleServiceMockData {
-  simpleUnaryRequest?: [GrpcResponse | null, GrpcResponse | undefined];
+  unary?: [GrpcResponse | null, GrpcResponse | undefined];
 }
 
-export const __setSimpleServicePackageDefinition = ({
-  simpleUnaryRequest,
-}: SimpleServiceMockData = {}) => {
+export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMockData = {}) => {
   const SimpleUnaryRequest = jest.fn((payload, _metadata, callback) => {
-    if (simpleUnaryRequest) {
-      callback(...simpleUnaryRequest);
+    if (unary) {
+      callback(...unary);
     } else {
       callback(null, payload);
     }
   });
 
+  const SimpleClientStreamRequest = jest.fn((_metadata, callback) => {
+    const stream = new Writable();
+
+    // @ts-ignore
+    stream._push = (error: GrpcResponse | null, data: GrpcResponse | undefined) => {
+      callback(error, data);
+    };
+
+    return stream;
+  });
+
   const SimpleService = jest.fn(() => ({
     SimpleUnaryRequest,
+    SimpleClientStreamRequest,
   }));
 
   // @ts-ignore
@@ -43,6 +54,7 @@ export const __setSimpleServicePackageDefinition = ({
   return {
     PACKAGE_DEFINITION_MOCK,
     SimpleUnaryRequest,
+    SimpleClientStreamRequest,
   };
 };
 

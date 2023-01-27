@@ -1,5 +1,6 @@
 import type { MetadataValue } from '@grpc/grpc-js';
 import type { PackageDefinition } from '@grpc/proto-loader';
+import { Writable } from 'node:stream';
 
 import {
   AbstractProtocolOptions,
@@ -15,9 +16,6 @@ import {
 export abstract class AbstractProtocol {
   constructor(protected readonly options: AbstractProtocolOptions) {}
 
-  /**
-   * Invokes unary request
-   */
   public abstract invokeUnaryRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
     Response extends GrpcResponseValue = GrpcResponseValue
@@ -28,9 +26,12 @@ export abstract class AbstractProtocol {
     metadata?: Record<string, MetadataValue>
   ): Promise<GrpcResponse<Response>>;
 
-  // public abstract invokeClientStreamingRequest(
-  //   packageDefinition: PackageDefinition
-  // ): Promise<GrpcResponse>;
+  // TODO: add types for stream "on" handlers
+  public abstract invokeClientStreamingRequest(
+    packageDefinition: PackageDefinition,
+    requestOptions: GrpcRequestOptions,
+    metadata?: Record<string, MetadataValue>
+  ): Writable;
 
   // public abstract invokeServerStreamingRequest(
   //   packageDefinition: PackageDefinition

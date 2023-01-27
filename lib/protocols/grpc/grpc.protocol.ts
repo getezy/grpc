@@ -1,6 +1,7 @@
 import type {
   ChannelCredentials,
   ChannelOptions,
+  ClientWritableStream,
   MetadataValue,
   ServerErrorResponse,
 } from '@grpc/grpc-js';
@@ -44,8 +45,10 @@ export class GrpcProtocol extends AbstractProtocol {
     metadata?: Record<string, MetadataValue>
   ): Promise<GrpcResponse<Response>> {
     const client = this.createClient(packageDefinition, requestOptions);
+
     return new Promise((resolve) => {
       const startTime = performance.now();
+
       client[requestOptions.method](
         payload,
         metadata ? MetadataParser.parse(metadata) : new grpc.Metadata(),
@@ -67,6 +70,36 @@ export class GrpcProtocol extends AbstractProtocol {
         }
       );
     });
+  }
+
+  public invokeClientStreamingRequest<
+    Request extends GrpcRequestValue = GrpcRequestValue,
+    Response extends GrpcResponseValue = GrpcResponseValue
+  >(
+    packageDefinition: PackageDefinition,
+    requestOptions: GrpcRequestOptions,
+    metadata?: Record<string, MetadataValue>
+  ) {
+    const client = this.createClient(packageDefinition, requestOptions);
+
+    const call: ClientWritableStream<Request> = client[requestOptions.method](
+      metadata ? MetadataParser.parse(metadata) : new grpc.Metadata(),
+      (error: ServerErrorResponse, response: Response) => {
+        if (error) {
+          return call.emit('error', {
+            code: error.code || GrpcStatus.UNKNOWN,
+            value: {
+              details: error.details,
+              metadata: error.metadata?.toJSON(),
+            },
+          });
+        }
+
+        return call.emit('data', response);
+      }
+    );
+
+    return call;
   }
 
   private createClient(packageDefinition: PackageDefinition, requestOptions: GrpcRequestOptions) {
