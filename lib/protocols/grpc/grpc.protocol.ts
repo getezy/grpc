@@ -15,6 +15,7 @@ import { Duplex } from 'node:stream';
 
 import {
   AbstractProtocol,
+  ClientStream,
   GrpcChannelOptions,
   GrpcProtocolOptions,
   GrpcRequestOptions,
@@ -61,15 +62,15 @@ export class GrpcProtocol extends AbstractProtocol {
           if (error) {
             return resolve({
               timestamp,
-              code: error.code || GrpcStatus.UNKNOWN,
-              value: {
+              code: (error.code || GrpcStatus.UNKNOWN) as GrpcStatus,
+              data: {
                 details: error.details,
                 metadata: error.metadata?.toJSON(),
               },
             });
           }
 
-          return resolve({ timestamp, code: GrpcStatus.OK, value: response });
+          return resolve({ timestamp, code: GrpcStatus.OK, data: response });
         }
       );
     });
@@ -82,27 +83,53 @@ export class GrpcProtocol extends AbstractProtocol {
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
     metadata?: Record<string, MetadataValue>
-  ) {
+  ): ClientStream<Request, Response> {
     const client = this.createClient(packageDefinition, requestOptions);
+
+    const emitter = new ClientStream<Request, Response>();
 
     const call: ClientWritableStream<Request> = client[requestOptions.method](
       metadata ? MetadataParser.parse(metadata) : new grpc.Metadata(),
       (error: ServerErrorResponse, response: Response) => {
         if (error) {
-          return call.emit('error', {
-            code: error.code || GrpcStatus.UNKNOWN,
-            value: {
+          return emitter.error({
+            code: (error.code || GrpcStatus.UNKNOWN) as GrpcStatus,
+            timestamp: new Date().getTime(),
+            data: {
               details: error.details,
               metadata: error.metadata?.toJSON(),
             },
           });
         }
 
-        return call.emit('data', response);
+        return emitter.response({
+          code: GrpcStatus.OK,
+          timestamp: new Date().getTime(),
+          data: response,
+        });
       }
     );
 
-    return call;
+    this.subsribeOnClientStreamEvents(emitter, call);
+
+    return emitter;
+  }
+
+  private subsribeOnClientStreamEvents<
+    Request extends GrpcRequestValue = GrpcRequestValue,
+    Response extends GrpcResponseValue = GrpcResponseValue
+  >(emitter: ClientStream<Request, Response>, call: ClientWritableStream<Request>) {
+    emitter.on('write', (payload) => {
+      call.write(payload);
+    });
+
+    emitter.on('cancel', () => {
+      call.cancel();
+    });
+
+    emitter.on('end', () => {
+      call.end();
+    });
   }
 
   public invokeServerStreamingRequest<

@@ -1,9 +1,10 @@
 import type { MetadataValue } from '@grpc/grpc-js';
 import type { PackageDefinition } from '@grpc/proto-loader';
-import { Duplex, Readable, Writable } from 'node:stream';
+import { Duplex, Readable } from 'node:stream';
 
 import {
   AbstractProtocolOptions,
+  ClientStream,
   GrpcRequestOptions,
   GrpcRequestValue,
   GrpcResponse,
@@ -26,12 +27,14 @@ export abstract class AbstractProtocol {
     metadata?: Record<string, MetadataValue>
   ): Promise<GrpcResponse<Response>>;
 
-  // TODO: add types for stream "on" handlers
-  public abstract invokeClientStreamingRequest(
+  public abstract invokeClientStreamingRequest<
+    Request extends GrpcRequestValue = GrpcRequestValue,
+    Response extends GrpcResponseValue = GrpcResponseValue
+  >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
     metadata?: Record<string, MetadataValue>
-  ): Writable;
+  ): ClientStream<Request, Response>;
 
   // TODO: add types for stream "on" handlers
   public abstract invokeServerStreamingRequest<Request extends GrpcRequestValue = GrpcRequestValue>(

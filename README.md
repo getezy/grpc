@@ -1,6 +1,6 @@
 # @getezy/grpc-client
 
-Universal, extendable gRPC/gRPC-Web client library used in [ezy](https://github.com/getezy/ezy).
+Universal, extendable, typesafe gRPC/gRPC-Web client for node used in [ezy](https://github.com/getezy/ezy).
 
 # Install
 

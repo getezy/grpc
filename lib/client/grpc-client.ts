@@ -3,6 +3,7 @@ import type { MetadataValue } from '@grpc/grpc-js';
 import { AbstractLoader } from '@loaders';
 import {
   AbstractProtocol,
+  ClientStream,
   GrpcRequestOptions,
   GrpcRequestValue,
   GrpcResponse,
@@ -30,5 +31,17 @@ export class GrpcClient {
     const packageDefinition = this.loader.getPackageDefinition();
 
     return this.protocol.invokeUnaryRequest(packageDefinition, options, request, metadata);
+  }
+
+  public invokeClientStreamingRequest<
+    Request extends GrpcRequestValue = GrpcRequestValue,
+    Response extends GrpcResponseValue = GrpcResponseValue
+  >(
+    options: GrpcRequestOptions,
+    metadata?: Record<string, MetadataValue>
+  ): ClientStream<Request, Response> {
+    const packageDefinition = this.loader.getPackageDefinition();
+
+    return this.protocol.invokeClientStreamingRequest(packageDefinition, options, metadata);
   }
 }

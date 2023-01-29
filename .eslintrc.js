@@ -17,7 +17,7 @@ module.exports = {
   },
 
   plugins: ['simple-import-sort', 'prettier', 'import'],
-  extends: ['airbnb', 'airbnb-typescript', 'prettier'],
+  extends: ['airbnb-base', 'airbnb-typescript/base', 'prettier'],
   rules: {
     'prettier/prettier': [
       'error',

@@ -4,7 +4,7 @@
 import type { PackageDefinition } from '@grpc/proto-loader';
 import { Duplex, Readable, Writable } from 'node:stream';
 
-import { GrpcResponse } from '@protocols';
+import { GrpcResponse, GrpcStatus } from '@protocols';
 
 const originalModule = jest.requireActual('@grpc/grpc-js');
 
@@ -27,15 +27,25 @@ export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMock
     }
   });
 
+  const SimpleClientStream = new Writable({ objectMode: true });
+  SimpleClientStream._write = () => {};
   const SimpleClientStreamRequest = jest.fn((_metadata, callback) => {
-    const stream = new Writable();
+    // const stream = new Writable();
 
     // @ts-ignore
-    stream._push = (error: GrpcResponse | null, data: GrpcResponse | undefined) => {
+    SimpleClientStream._setResponse = (
+      error: GrpcResponse | null,
+      data: GrpcResponse | undefined
+    ) => {
       callback(error, data);
     };
 
-    return stream;
+    // @ts-ignore
+    SimpleClientStream.cancel = () => {
+      callback({ code: GrpcStatus.CANCELED });
+    };
+
+    return SimpleClientStream;
   });
 
   const SimpleServerStreamRequest = jest.fn(() => {
@@ -69,6 +79,7 @@ export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMock
     SimpleClientStreamRequest,
     SimpleServerStreamRequest,
     SimpleBidirectionalStreamRequest,
+    SimpleClientStream,
   };
 };
 
