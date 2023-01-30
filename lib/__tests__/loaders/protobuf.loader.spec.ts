@@ -25,7 +25,6 @@ describe('ProtobufLoader', () => {
 
     const packageDefinition = loader.getPackageDefinition();
 
-    // @ts-ignore
     expect(packageDefinition['simple_package.v1.SimpleMessage']).toBeTruthy();
   });
 
@@ -39,7 +38,6 @@ describe('ProtobufLoader', () => {
 
     const packageDefinition = loader.getPackageDefinition();
 
-    // @ts-ignore
     expect(packageDefinition['simple_package.v1.SimpleMessage']).toBeTruthy();
   });
 

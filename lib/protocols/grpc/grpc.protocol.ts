@@ -26,6 +26,7 @@ import {
   instanceOfServiceClientConstructor,
   isMutualTlsConfig,
   isServerSideTlsConfig,
+  ServerStream,
 } from '@protocols';
 
 import { MetadataParser } from './grpc-metadata.parser';
@@ -92,7 +93,7 @@ export class GrpcProtocol extends AbstractProtocol {
       metadata ? MetadataParser.parse(metadata) : new grpc.Metadata(),
       (error: ServerErrorResponse, response: Response) => {
         if (error) {
-          return emitter.error({
+          return emitter.emit('error', {
             code: (error.code || GrpcStatus.UNKNOWN) as GrpcStatus,
             timestamp: new Date().getTime(),
             data: {
@@ -102,7 +103,7 @@ export class GrpcProtocol extends AbstractProtocol {
           });
         }
 
-        return emitter.response({
+        return emitter.emit('response', {
           code: GrpcStatus.OK,
           timestamp: new Date().getTime(),
           data: response,
@@ -110,12 +111,12 @@ export class GrpcProtocol extends AbstractProtocol {
       }
     );
 
-    this.subsribeOnClientStreamEvents(emitter, call);
+    this.subsribeOnClientStreamingEvents(emitter, call);
 
     return emitter;
   }
 
-  private subsribeOnClientStreamEvents<
+  private subsribeOnClientStreamingEvents<
     Request extends GrpcRequestValue = GrpcRequestValue,
     Response extends GrpcResponseValue = GrpcResponseValue
   >(emitter: ClientStream<Request, Response>, call: ClientWritableStream<Request>) {
@@ -140,15 +141,47 @@ export class GrpcProtocol extends AbstractProtocol {
     requestOptions: GrpcRequestOptions,
     payload: Request,
     metadata?: Record<string, MetadataValue>
-  ) {
+  ): ServerStream<Response> {
     const client = this.createClient(packageDefinition, requestOptions);
+
+    const emitter = new ServerStream<Response>();
 
     const call: ClientReadableStream<Response> = client[requestOptions.method](
       payload,
       metadata ? MetadataParser.parse(metadata) : new grpc.Metadata()
     );
 
-    return call;
+    this.subsribeOnServerStreamingEvents(emitter, call);
+
+    return emitter;
+  }
+
+  private subsribeOnServerStreamingEvents<Response extends GrpcResponseValue = GrpcResponseValue>(
+    emitter: ServerStream<Response>,
+    call: ClientReadableStream<Response>
+  ) {
+    call.on('data', (response) => {
+      emitter.emit('response', response);
+    });
+
+    call.on('error', (error: ServerErrorResponse) => {
+      emitter.emit('error', {
+        code: (error.code || GrpcStatus.UNKNOWN) as GrpcStatus,
+        timestamp: new Date().getTime(),
+        data: {
+          details: error.details,
+          metadata: error.metadata?.toJSON(),
+        },
+      });
+    });
+
+    call.on('end', () => {
+      emitter.emit('end');
+    });
+
+    emitter.on('cancel', () => {
+      call.cancel();
+    });
   }
 
   public invokeBidirectionalStreamingRequest(

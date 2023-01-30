@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable no-underscore-dangle */
 
@@ -30,8 +31,6 @@ export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMock
   const SimpleClientStream = new Writable({ objectMode: true });
   SimpleClientStream._write = () => {};
   const SimpleClientStreamRequest = jest.fn((_metadata, callback) => {
-    // const stream = new Writable();
-
     // @ts-ignore
     SimpleClientStream._setResponse = (
       error: GrpcResponse | null,
@@ -48,9 +47,32 @@ export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMock
     return SimpleClientStream;
   });
 
-  const SimpleServerStreamRequest = jest.fn(() => {
-    const stream = new Readable();
-    return stream;
+  const SimpleServerStream = new Readable({ objectMode: true });
+  SimpleServerStream._read = () => {};
+  const SimpleServerStreamRequest = jest.fn((_payload, _metadata) => {
+    // @ts-ignore
+    SimpleServerStream._setResponse = (
+      error: GrpcResponse | null,
+      data: GrpcResponse | undefined
+    ) => {
+      if (error) {
+        SimpleServerStream.emit('error', error);
+      } else {
+        SimpleServerStream.emit('data', data);
+      }
+    };
+
+    // @ts-ignore
+    SimpleServerStream._setEnd = () => {
+      SimpleServerStream.emit('end');
+    };
+
+    // @ts-ignore
+    SimpleServerStream.cancel = () => {
+      SimpleServerStream.emit('cancel', { code: GrpcStatus.CANCELED });
+    };
+
+    return SimpleServerStream;
   });
 
   const SimpleBidirectionalStreamRequest = jest.fn(() => {
@@ -80,6 +102,7 @@ export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMock
     SimpleServerStreamRequest,
     SimpleBidirectionalStreamRequest,
     SimpleClientStream,
+    SimpleServerStream,
   };
 };
 

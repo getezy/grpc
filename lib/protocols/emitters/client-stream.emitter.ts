@@ -4,10 +4,7 @@ import { TypedEmitter } from 'tiny-typed-emitter';
 
 import { GrpcRequestValue, GrpcResponse, GrpcResponseValue } from '@protocols';
 
-interface ClientStreamEmitterEvents<
-  Request extends GrpcRequestValue,
-  Response extends GrpcResponseValue
-> {
+interface ClientStreamEvents<Request extends GrpcRequestValue, Response extends GrpcResponseValue> {
   write: (payload: Request) => void;
   end: () => void;
   cancel: () => void;
@@ -18,15 +15,7 @@ interface ClientStreamEmitterEvents<
 export class ClientStream<
   Request extends GrpcRequestValue = GrpcRequestValue,
   Response extends GrpcResponseValue = GrpcResponseValue
-> extends TypedEmitter<ClientStreamEmitterEvents<Request, Response>> {
-  public error(error: GrpcResponse<Response>) {
-    this.emit('error', error);
-  }
-
-  public response(response: GrpcResponse<Response>) {
-    this.emit('response', response);
-  }
-
+> extends TypedEmitter<ClientStreamEvents<Request, Response>> {
   /**
    * Send payload to the stream.
    */

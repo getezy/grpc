@@ -7,6 +7,8 @@ import { GrpcClient, GrpcClientFactory } from '@client';
 import { ProtobufLoader } from '@loaders';
 import { GrpcProtocol, GrpcStatus, GrpcTlsType } from '@protocols';
 
+import { generatePayload } from '../__utils__';
+
 describe('GrpcClient', () => {
   let client: GrpcClient;
   let clientStream: any;
@@ -22,39 +24,84 @@ describe('GrpcClient', () => {
     );
   });
 
-  it('should invoke unary request', async () => {
-    const response = await client.invokeUnaryRequest(
-      {
+  describe('GrpcClient:Unary', () => {
+    it('should throw error if service not found in package definition', async () => {
+      await expect(() =>
+        client.invokeUnaryRequest(
+          { service: 'simple_package.v1.Test', method: 'SimpleUnaryRequest' },
+          {}
+        )
+      ).toThrowError(`Service "simple_package.v1.Test" not found in package definition`);
+    });
+
+    it('should throw error if method not found in package definition', async () => {
+      await expect(() =>
+        client.invokeUnaryRequest(
+          { service: 'simple_package.v1.SimpleService', method: 'Test' },
+          {}
+        )
+      ).toThrowError(`Method "Test" not found in package definition`);
+    });
+
+    it('should invoke unary request', async () => {
+      const [payload] = generatePayload();
+
+      const response = await client.invokeUnaryRequest(
+        {
+          service: 'simple_package.v1.SimpleService',
+          method: 'SimpleUnaryRequest',
+        },
+        payload
+      );
+
+      expect(response).toStrictEqual({
+        code: GrpcStatus.OK,
+        timestamp: 0,
+        data: payload,
+      });
+    });
+  });
+
+  describe('GrpcClient:ClientStreaming', () => {
+    it('should throw error if service not found in package definition', async () => {
+      await expect(() =>
+        client.invokeClientStreamingRequest({
+          service: 'simple_package.v1.Test',
+          method: 'SimpleUnaryRequest',
+        })
+      ).toThrowError(`Service "simple_package.v1.Test" not found in package definition`);
+    });
+
+    it('should throw error if method not found in package definition', async () => {
+      await expect(() =>
+        client.invokeClientStreamingRequest({
+          service: 'simple_package.v1.SimpleService',
+          method: 'Test',
+        })
+      ).toThrowError(`Method "Test" not found in package definition`);
+    });
+
+    it('should invoke client streaming request', async () => {
+      const [payload] = generatePayload();
+      const call = client.invokeClientStreamingRequest({
         service: 'simple_package.v1.SimpleService',
-        method: 'SimpleUnaryRequest',
-      },
-      { id: '962af482-13c2-4084-a1fe-4eb135378d67' }
-    );
+        method: 'SimpleClientStreamRequest',
+      });
 
-    expect(response).toStrictEqual({
-      code: GrpcStatus.OK,
-      timestamp: 0,
-      data: { id: '962af482-13c2-4084-a1fe-4eb135378d67' },
+      const spy = jest.spyOn(call, 'emit');
+
+      clientStream._setResponse(null, payload);
+
+      expect(spy).toBeCalledTimes(1);
+      expect(spy).toBeCalledWith('response', {
+        code: GrpcStatus.OK,
+        timestamp: expect.anything(),
+        data: payload,
+      });
     });
   });
 
-  it('should invoke client streaming request', async () => {
-    const call = client.invokeClientStreamingRequest({
-      service: 'simple_package.v1.SimpleService',
-      method: 'SimpleClientStreamRequest',
-    });
+  describe('GrpcClient:ServerStreaming', () => {});
 
-    const spy = jest.spyOn(call, 'response');
-
-    clientStream._setResponse(null, { id: '962af482-13c2-4084-a1fe-4eb135378d67' });
-
-    expect(spy).toBeCalledTimes(1);
-    expect(spy).toBeCalledWith({
-      code: GrpcStatus.OK,
-      timestamp: expect.anything(),
-      data: {
-        id: '962af482-13c2-4084-a1fe-4eb135378d67',
-      },
-    });
-  });
+  describe('GrpcClient:BidirectionalStreaming', () => {});
 });
