@@ -467,8 +467,16 @@ describe('GrpcProtocol', () => {
       stream._setEnd();
 
       expect(emitSpy).toBeCalledTimes(3);
-      expect(emitSpy).toHaveBeenNthCalledWith(1, 'response', payload[1]);
-      expect(emitSpy).toHaveBeenNthCalledWith(2, 'response', payload[2]);
+      expect(emitSpy).toHaveBeenNthCalledWith(1, 'response', {
+        code: GrpcStatus.OK,
+        timestamp: expect.anything(),
+        data: payload[1],
+      });
+      expect(emitSpy).toHaveBeenNthCalledWith(2, 'response', {
+        code: GrpcStatus.OK,
+        timestamp: expect.anything(),
+        data: payload[2],
+      });
       expect(emitSpy).toHaveBeenNthCalledWith(3, 'end');
 
       expect(SimpleServerStreamMethod).toBeCalledTimes(1);
@@ -493,7 +501,7 @@ describe('GrpcProtocol', () => {
       expect(SimpleServerStreamMethod).toBeCalledWith(payload, metadata);
     });
 
-    it('should cancel server streaming request without metadata', () => {
+    it('should cancel server streaming request', () => {
       const [payload] = generatePayload();
 
       const call = protocol.invokeServerStreamingRequest(
@@ -552,6 +560,152 @@ describe('GrpcProtocol', () => {
         },
         payload
       );
+
+      const emitSpy = jest.spyOn(call, 'emit');
+
+      expect(() => stream._setResponse({ code: GrpcStatus.ABORTED, details: 'details' })).toThrow();
+
+      expect(emitSpy).toBeCalledTimes(1);
+      expect(emitSpy).toBeCalledWith('error', {
+        code: GrpcStatus.ABORTED,
+        timestamp: expect.anything(),
+        data: {
+          details: 'details',
+          metadata: undefined,
+        },
+      });
+    });
+  });
+
+  describe('GrpcProtocol:BidirectionalStreamingRequest', () => {
+    let protocol: GrpcProtocol;
+    let loader: ProtobufLoader;
+
+    let SimpleBidirectionalStreamMethod: any;
+    let stream: any;
+
+    beforeAll(async () => {
+      loader = new ProtobufLoader(path.join(__dirname, '../__fixtures__/proto/v3.proto'));
+
+      await loader.load();
+    });
+
+    beforeEach(() => {
+      const { SimpleBidirectionalStreamRequest, SimpleBidirectionalStream } =
+        // @ts-ignore
+        grpc.__setSimpleServicePackageDefinition();
+      SimpleBidirectionalStreamMethod = SimpleBidirectionalStreamRequest;
+      stream = SimpleBidirectionalStream;
+
+      protocol = new GrpcProtocol({ address: '10.10.10.10', tls: { type: GrpcTlsType.INSECURE } });
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should invoke bidirectional streaming request without metadata', () => {
+      const payload = generatePayload(4);
+
+      const call = protocol.invokeBidirectionalStreamingRequest(loader.getPackageDefinition(), {
+        service: 'simple_package.v1.SimpleService',
+        method: 'SimpleBidirectionalStreamRequest',
+      });
+
+      const writeSpy = jest.spyOn(stream, 'write');
+
+      call.write(payload[0]);
+      call.write(payload[1]);
+
+      expect(writeSpy).toBeCalledTimes(2);
+      expect(writeSpy).toHaveBeenNthCalledWith(1, payload[0]);
+      expect(writeSpy).toHaveBeenNthCalledWith(2, payload[1]);
+
+      const endSpy = jest.spyOn(stream, 'end');
+      call.end();
+
+      expect(endSpy).toBeCalledTimes(1);
+
+      const emitSpy = jest.spyOn(call, 'emit');
+
+      stream._setResponse(null, payload[2]);
+      stream._setResponse(null, payload[3]);
+      stream._setEnd();
+
+      expect(emitSpy).toBeCalledTimes(3);
+      expect(emitSpy).toHaveBeenNthCalledWith(1, 'response', {
+        code: GrpcStatus.OK,
+        timestamp: expect.anything(),
+        data: payload[2],
+      });
+      expect(emitSpy).toHaveBeenNthCalledWith(2, 'response', {
+        code: GrpcStatus.OK,
+        timestamp: expect.anything(),
+        data: payload[3],
+      });
+      expect(emitSpy).toHaveBeenNthCalledWith(3, 'end-server-stream');
+
+      expect(SimpleBidirectionalStreamMethod).toBeCalledTimes(1);
+      expect(SimpleBidirectionalStreamMethod).toBeCalledWith(new grpc.Metadata());
+    });
+
+    it('should invoke bidirectional streaming request with metadata', () => {
+      const { pureMetadata, metadata } = generateMetadata();
+
+      protocol.invokeBidirectionalStreamingRequest(
+        loader.getPackageDefinition(),
+        {
+          service: 'simple_package.v1.SimpleService',
+          method: 'SimpleBidirectionalStreamRequest',
+        },
+        pureMetadata
+      );
+
+      expect(SimpleBidirectionalStreamMethod).toBeCalledTimes(1);
+      expect(SimpleBidirectionalStreamMethod).toBeCalledWith(metadata);
+    });
+
+    it('should cancel bidirectional streaming request', () => {
+      const call = protocol.invokeBidirectionalStreamingRequest(loader.getPackageDefinition(), {
+        service: 'simple_package.v1.SimpleService',
+        method: 'SimpleBidirectionalStreamRequest',
+      });
+
+      const cancelSpy = jest.spyOn(stream, 'cancel');
+      const emitSpy = jest.spyOn(call, 'emit');
+
+      call.cancel();
+
+      expect(cancelSpy).toBeCalledTimes(1);
+      expect(emitSpy).toHaveBeenNthCalledWith(1, 'cancel');
+    });
+
+    it('should handle bidirectional streaming request error without error code', () => {
+      const call = protocol.invokeBidirectionalStreamingRequest(loader.getPackageDefinition(), {
+        service: 'simple_package.v1.SimpleService',
+        method: 'SimpleBidirectionalStreamRequest',
+      });
+
+      const emitSpy = jest.spyOn(call, 'emit');
+
+      expect(() => stream._setResponse({ details: 'details' })).toThrow();
+
+      expect(emitSpy).toBeCalledTimes(1);
+      expect(emitSpy).toBeCalledWith('error', {
+        code: GrpcStatus.UNKNOWN,
+        timestamp: expect.anything(),
+        data: {
+          details: 'details',
+          metadata: undefined,
+        },
+      });
+    });
+
+    it('should handle bidirectional streaming request error with error code', () => {
+      const call = protocol.invokeBidirectionalStreamingRequest(loader.getPackageDefinition(), {
+        service: 'simple_package.v1.SimpleService',
+        method: 'SimpleBidirectionalStreamRequest',
+      });
 
       const emitSpy = jest.spyOn(call, 'emit');
 

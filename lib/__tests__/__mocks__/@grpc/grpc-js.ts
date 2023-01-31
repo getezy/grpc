@@ -75,9 +75,33 @@ export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMock
     return SimpleServerStream;
   });
 
+  const SimpleBidirectionalStream = new Duplex({ objectMode: true });
+  SimpleBidirectionalStream._write = () => {};
+  SimpleBidirectionalStream._read = () => {};
   const SimpleBidirectionalStreamRequest = jest.fn(() => {
-    const stream = new Duplex();
-    return stream;
+    // @ts-ignore
+    SimpleBidirectionalStream._setResponse = (
+      error: GrpcResponse | null,
+      data: GrpcResponse | undefined
+    ) => {
+      if (error) {
+        SimpleBidirectionalStream.emit('error', error);
+      } else {
+        SimpleBidirectionalStream.emit('data', data);
+      }
+    };
+
+    // @ts-ignore
+    SimpleBidirectionalStream._setEnd = () => {
+      SimpleBidirectionalStream.emit('end');
+    };
+
+    // @ts-ignore
+    SimpleBidirectionalStream.cancel = () => {
+      SimpleBidirectionalStream.emit('cancel', { code: GrpcStatus.CANCELED });
+    };
+
+    return SimpleBidirectionalStream;
   });
 
   const SimpleService = jest.fn(() => ({
@@ -103,6 +127,7 @@ export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMock
     SimpleBidirectionalStreamRequest,
     SimpleClientStream,
     SimpleServerStream,
+    SimpleBidirectionalStream,
   };
 };
 

@@ -11,10 +11,10 @@ import * as grpc from '@grpc/grpc-js';
 import type { PackageDefinition } from '@grpc/proto-loader';
 import lodashGet from 'lodash.get';
 import * as fs from 'node:fs';
-import { Duplex } from 'node:stream';
 
 import {
   AbstractProtocol,
+  BidirectionalStream,
   ClientStream,
   GrpcChannelOptions,
   GrpcProtocolOptions,
@@ -161,7 +161,11 @@ export class GrpcProtocol extends AbstractProtocol {
     call: ClientReadableStream<Response>
   ) {
     call.on('data', (response) => {
-      emitter.emit('response', response);
+      emitter.emit('response', {
+        code: GrpcStatus.OK,
+        timestamp: new Date().getTime(),
+        data: response,
+      });
     });
 
     call.on('error', (error: ServerErrorResponse) => {
@@ -184,19 +188,65 @@ export class GrpcProtocol extends AbstractProtocol {
     });
   }
 
-  public invokeBidirectionalStreamingRequest(
+  public invokeBidirectionalStreamingRequest<
+    Request extends GrpcRequestValue = GrpcRequestValue,
+    Response extends GrpcResponseValue = GrpcResponseValue
+  >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
     metadata?: Record<string, MetadataValue>
-  ) {
+  ): BidirectionalStream<Request, Response> {
     const client = this.createClient(packageDefinition, requestOptions);
+
+    const emitter = new BidirectionalStream<Request, Response>();
 
     const call: ClientDuplexStream<Request, Response> = client[requestOptions.method](
       metadata ? MetadataParser.parse(metadata) : new grpc.Metadata()
     );
 
-    // TODO: rewrite
-    return call as unknown as Duplex;
+    this.subsribeOnBidirectionalStreamingEvents(emitter, call);
+
+    return emitter;
+  }
+
+  private subsribeOnBidirectionalStreamingEvents<
+    Request extends GrpcRequestValue = GrpcRequestValue,
+    Response extends GrpcResponseValue = GrpcResponseValue
+  >(emitter: BidirectionalStream<Request, Response>, call: ClientDuplexStream<Request, Response>) {
+    emitter.on('write', (payload) => {
+      call.write(payload);
+    });
+
+    emitter.on('cancel', () => {
+      call.cancel();
+    });
+
+    emitter.on('end-client-stream', () => {
+      call.end();
+    });
+
+    call.on('data', (response) => {
+      emitter.emit('response', {
+        code: GrpcStatus.OK,
+        timestamp: new Date().getTime(),
+        data: response,
+      });
+    });
+
+    call.on('end', () => {
+      emitter.emit('end-server-stream');
+    });
+
+    call.on('error', (error: ServerErrorResponse) => {
+      emitter.emit('error', {
+        code: (error.code || GrpcStatus.UNKNOWN) as GrpcStatus,
+        timestamp: new Date().getTime(),
+        data: {
+          details: error.details,
+          metadata: error.metadata?.toJSON(),
+        },
+      });
+    });
   }
 
   private createClient(packageDefinition: PackageDefinition, requestOptions: GrpcRequestOptions) {

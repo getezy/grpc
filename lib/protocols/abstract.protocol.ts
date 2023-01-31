@@ -1,9 +1,9 @@
 import type { MetadataValue } from '@grpc/grpc-js';
 import type { PackageDefinition } from '@grpc/proto-loader';
-import { Duplex } from 'node:stream';
 
 import {
   AbstractProtocolOptions,
+  BidirectionalStream,
   ClientStream,
   GrpcRequestOptions,
   GrpcRequestValue,
@@ -47,9 +47,12 @@ export abstract class AbstractProtocol {
     metadata?: Record<string, MetadataValue>
   ): ServerStream<Response>;
 
-  public abstract invokeBidirectionalStreamingRequest(
+  public abstract invokeBidirectionalStreamingRequest<
+    Request extends GrpcRequestValue = GrpcRequestValue,
+    Response extends GrpcResponseValue = GrpcResponseValue
+  >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
     metadata?: Record<string, MetadataValue>
-  ): Duplex;
+  ): BidirectionalStream<Request, Response>;
 }

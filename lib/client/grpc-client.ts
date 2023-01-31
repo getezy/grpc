@@ -3,11 +3,13 @@ import type { MetadataValue } from '@grpc/grpc-js';
 import { AbstractLoader } from '@loaders';
 import {
   AbstractProtocol,
+  BidirectionalStream,
   ClientStream,
   GrpcRequestOptions,
   GrpcRequestValue,
   GrpcResponse,
   GrpcResponseValue,
+  ServerStream,
 } from '@protocols';
 
 export class GrpcClient {
@@ -43,5 +45,35 @@ export class GrpcClient {
     const packageDefinition = this.loader.getPackageDefinition();
 
     return this.protocol.invokeClientStreamingRequest(packageDefinition, options, metadata);
+  }
+
+  public invokeServerStreamingRequest<
+    Request extends GrpcRequestValue = GrpcRequestValue,
+    Response extends GrpcResponseValue = GrpcResponseValue
+  >(
+    options: GrpcRequestOptions,
+    payload: Request,
+    metadata?: Record<string, MetadataValue>
+  ): ServerStream<Response> {
+    const packageDefinition = this.loader.getPackageDefinition();
+
+    return this.protocol.invokeServerStreamingRequest(
+      packageDefinition,
+      options,
+      payload,
+      metadata
+    );
+  }
+
+  public invokeBidirectionalStreamingRequest<
+    Request extends GrpcRequestValue = GrpcRequestValue,
+    Response extends GrpcResponseValue = GrpcResponseValue
+  >(
+    options: GrpcRequestOptions,
+    metadata?: Record<string, MetadataValue>
+  ): BidirectionalStream<Request, Response> {
+    const packageDefinition = this.loader.getPackageDefinition();
+
+    return this.protocol.invokeBidirectionalStreamingRequest(packageDefinition, options, metadata);
   }
 }
