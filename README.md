@@ -10,7 +10,7 @@ npm install @getezy/grpc-client
 
 # Usage
 ```ts
-import { GrpcClientFactory, GrpcProtocol, ProtobufLoader } from '@getezy/grpc-client';
+import { GrpcClientFactory, GrpcProtocol, ProtobufLoader, GrpcTlsType } from '@getezy/grpc-client';
 
 const client = await GrpcClientFactory.create(
   new ProtobufLoader(path.join(__dirname, '../proto/main.proto')),
@@ -34,7 +34,7 @@ Uses [@grpc/proto-loader](https://www.npmjs.com/package/@grpc/proto-loader) for 
 
 Refer to [@grpc/proto-loader](https://www.npmjs.com/package/@grpc/proto-loader) documentation to see available options.
 
-⚠️ Overided defaults options are:
+⚠️ Overided default options are:
 ```js
 // Preserve field names. The default is to change them to camel case.
 keepCase: true,
@@ -119,7 +119,7 @@ export interface GrpcResponse<Response> {
 Uses [@grpc/grpc-js](https://www.npmjs.com/package/@grpc/grpc-js).
 
 ```js
-import { GrpcProtocol } from '@getezy/grpc-client';
+import { GrpcProtocol, GrpcTlsType } from '@getezy/grpc-client';
 
 const protocol = new GrpcProtocol({
   address: '10.10.10.10',
@@ -131,8 +131,10 @@ const protocol = new GrpcProtocol({
 ### gRPC-Web
 Uses [@improbable-eng/grpc-web](https://www.npmjs.com/package/@improbable-eng/grpc-web).
 
+⚠️ gRPC-Web supports only **unary** and **server streaming** requests, read more [here](https://github.com/grpc/grpc-web/blob/master/doc/streaming-roadmap.md#client-streaming-and-half-duplex-streaming).
+
 ```js
-import { GrpcWebProtocol } from '@getezy/grpc-client';
+import { GrpcWebProtocol, GrpcTlsType } from '@getezy/grpc-client';
 
 const protocol = new GrpcWebProtocol({
   address: '10.10.10.10',
@@ -147,7 +149,7 @@ You can write custom protocol implementation by extending `AbstractProtocol` cla
 import { AbstractProtocol } from '@getezy/grpc-client';
 
 class CustomProtocol extends AbstractProtocol {
-  ...
+  // custom protocol implementation
 }
 ```
 

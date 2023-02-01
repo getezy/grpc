@@ -1,5 +1,3 @@
-import type { MetadataValue } from '@grpc/grpc-js';
-
 import { AbstractLoader } from '@loaders';
 import {
   AbstractProtocol,
@@ -12,10 +10,10 @@ import {
   ServerStream,
 } from '@protocols';
 
-export class GrpcClient {
+export class GrpcClient<MetadataValue, Metadata> {
   constructor(
     private readonly loader: AbstractLoader,
-    private readonly protocol: AbstractProtocol
+    private readonly protocol: AbstractProtocol<MetadataValue, Metadata>
   ) {}
 
   async init() {

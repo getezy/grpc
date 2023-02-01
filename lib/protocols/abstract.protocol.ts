@@ -1,7 +1,7 @@
-import type { MetadataValue } from '@grpc/grpc-js';
 import type { PackageDefinition } from '@grpc/proto-loader';
 
 import {
+  AbstractMetadataParser,
   AbstractProtocolOptions,
   BidirectionalStream,
   ClientStream,
@@ -15,8 +15,11 @@ import {
 /**
  * AbstractProtocol used for make queries to grpc server
  */
-export abstract class AbstractProtocol {
-  constructor(protected readonly options: AbstractProtocolOptions) {}
+export abstract class AbstractProtocol<MetadataValue, Metadata> {
+  constructor(
+    protected readonly options: AbstractProtocolOptions,
+    protected readonly metadataParser: AbstractMetadataParser<MetadataValue, Metadata>
+  ) {}
 
   public abstract invokeUnaryRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
@@ -55,4 +58,8 @@ export abstract class AbstractProtocol {
     requestOptions: GrpcRequestOptions,
     metadata?: Record<string, MetadataValue>
   ): BidirectionalStream<Request, Response>;
+
+  protected parseMetadata(metadata?: Record<string, MetadataValue>): Metadata {
+    return this.metadataParser.parse(metadata);
+  }
 }

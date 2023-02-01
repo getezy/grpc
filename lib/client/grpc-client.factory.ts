@@ -3,10 +3,10 @@ import { AbstractLoader } from '@loaders';
 import { AbstractProtocol } from '@protocols';
 
 export class GrpcClientFactory {
-  public static async create(
+  public static async create<MetadataValue, Metadata>(
     loader: AbstractLoader,
-    protocol: AbstractProtocol
-  ): Promise<GrpcClient> {
+    protocol: AbstractProtocol<MetadataValue, Metadata>
+  ): Promise<GrpcClient<MetadataValue, Metadata>> {
     const client = new GrpcClient(loader, protocol);
 
     await client.init();

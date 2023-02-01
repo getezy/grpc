@@ -29,13 +29,13 @@ import {
   ServerStream,
 } from '@protocols';
 
-import { MetadataParser } from './grpc-metadata.parser';
+import { GrpcMetadataParser } from './grpc-metadata.parser';
 
-export class GrpcProtocol extends AbstractProtocol {
+export class GrpcProtocol extends AbstractProtocol<MetadataValue, grpc.Metadata> {
   public readonly channelOptions?: GrpcChannelOptions;
 
   constructor({ channelOptions, ...options }: GrpcProtocolOptions) {
-    super(options);
+    super(options, new GrpcMetadataParser());
 
     this.channelOptions = channelOptions;
   }
@@ -56,7 +56,7 @@ export class GrpcProtocol extends AbstractProtocol {
 
       client[requestOptions.method](
         payload,
-        metadata ? MetadataParser.parse(metadata) : new grpc.Metadata(),
+        this.parseMetadata(metadata),
         (error: ServerErrorResponse, response: Response) => {
           const timestamp = Math.trunc(performance.now() - startTime);
 
@@ -90,7 +90,7 @@ export class GrpcProtocol extends AbstractProtocol {
     const emitter = new ClientStream<Request, Response>();
 
     const call: ClientWritableStream<Request> = client[requestOptions.method](
-      metadata ? MetadataParser.parse(metadata) : new grpc.Metadata(),
+      this.parseMetadata(metadata),
       (error: ServerErrorResponse, response: Response) => {
         if (error) {
           return emitter.emit('error', {
@@ -148,7 +148,7 @@ export class GrpcProtocol extends AbstractProtocol {
 
     const call: ClientReadableStream<Response> = client[requestOptions.method](
       payload,
-      metadata ? MetadataParser.parse(metadata) : new grpc.Metadata()
+      this.parseMetadata(metadata)
     );
 
     this.subsribeOnServerStreamingEvents(emitter, call);
@@ -201,7 +201,7 @@ export class GrpcProtocol extends AbstractProtocol {
     const emitter = new BidirectionalStream<Request, Response>();
 
     const call: ClientDuplexStream<Request, Response> = client[requestOptions.method](
-      metadata ? MetadataParser.parse(metadata) : new grpc.Metadata()
+      this.parseMetadata(metadata)
     );
 
     this.subsribeOnBidirectionalStreamingEvents(emitter, call);

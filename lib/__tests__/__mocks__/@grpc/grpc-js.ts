@@ -5,7 +5,7 @@
 import type { PackageDefinition } from '@grpc/proto-loader';
 import { Duplex, Readable, Writable } from 'node:stream';
 
-import { GrpcResponse, GrpcStatus } from '@protocols';
+import { GrpcResponse, GrpcResponseValue, GrpcStatus } from '@protocols';
 
 const originalModule = jest.requireActual('@grpc/grpc-js');
 
@@ -16,7 +16,7 @@ export const __setPackageDefinition = (packageDefinition: PackageDefinition) => 
 };
 
 interface SimpleServiceMockData {
-  unary?: [GrpcResponse | null, GrpcResponse | undefined];
+  unary?: [GrpcResponse | null, GrpcResponseValue | undefined];
 }
 
 export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMockData = {}) => {
@@ -34,7 +34,7 @@ export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMock
     // @ts-ignore
     SimpleClientStream._setResponse = (
       error: GrpcResponse | null,
-      data: GrpcResponse | undefined
+      data: GrpcResponseValue | undefined
     ) => {
       callback(error, data);
     };
@@ -53,7 +53,7 @@ export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMock
     // @ts-ignore
     SimpleServerStream._setResponse = (
       error: GrpcResponse | null,
-      data: GrpcResponse | undefined
+      data: GrpcResponseValue | undefined
     ) => {
       if (error) {
         SimpleServerStream.emit('error', error);
@@ -82,7 +82,7 @@ export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMock
     // @ts-ignore
     SimpleBidirectionalStream._setResponse = (
       error: GrpcResponse | null,
-      data: GrpcResponse | undefined
+      data: GrpcResponseValue | undefined
     ) => {
       if (error) {
         SimpleBidirectionalStream.emit('error', error);
