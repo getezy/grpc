@@ -1,7 +1,15 @@
 # @getezy/grpc-client
-Universal, extendable, typesafe gRPC/gRPC-Web client for node used in [ezy](https://github.com/getezy/ezy).
 
-⚠️ This lib is not production ready until it is merged to main ezy project.
+<div align="center">
+
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/731941e4ddcb4fc7aa675d51dfb55f51)](https://www.codacy.com/gh/getezy/grpc-client/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=getezy/grpc-client&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/731941e4ddcb4fc7aa675d51dfb55f51)](https://www.codacy.com/gh/getezy/grpc-client/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=getezy/grpc-client&amp;utm_campaign=Badge_Coverage)
+
+</div>
+
+🛵  Universal, extendable, typesafe gRPC/gRPC-Web client for node used in [ezy](https://github.com/getezy/ezy).
+
+> ⚠️ This lib is not production ready until it is merged to main ezy project.
 
 # Install
 ```bash
