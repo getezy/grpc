@@ -1,6 +1,5 @@
-<br />
+🛵 Universal, extendable, typesafe gRPC/gRPC-Web client for node used in [ezy](https://github.com/getezy/ezy).
 
-#### 🛵 Universal, extendable, typesafe gRPC/gRPC-Web client for node used in [ezy](https://github.com/getezy/ezy).
 <br />
 <div align="center">
 
@@ -11,12 +10,12 @@
 
 > ⚠️ This lib is not production ready until it is merged to main ezy project.
 
-# Install
+## Install
 ```bash
 npm install @getezy/grpc-client
 ```
 
-# Usage
+## Usage
 ```ts
 import { GrpcClientFactory, GrpcProtocol, ProtobufLoader, GrpcTlsType } from '@getezy/grpc-client';
 
@@ -34,10 +33,10 @@ const response = await client.invokeUnaryRequest<Request, Response>(
 );
 ```
 
-## Loaders
+### Loaders
 Loader sets the strategy how to load gRPC package definitions.
 
-### ProtobufLoader
+#### ProtobufLoader
 Uses [@grpc/proto-loader](https://www.npmjs.com/package/@grpc/proto-loader) for load protobuf definition from the giving path.
 
 Refer to [@grpc/proto-loader](https://www.npmjs.com/package/@grpc/proto-loader) documentation to see available options.
@@ -68,10 +67,10 @@ const loader = new ProtobufLoader(
 const definition = await loader.load();
 ```
 
-### ReflectionLoader
+#### ReflectionLoader
 Loader by reflection API is coming soon.
 
-### Custom loader
+#### Custom loader
 You can write custom loader implementation by extending `AbstractLoader` class imported from `@getezy/grpc-client`.
 
 ```ts
@@ -84,7 +83,7 @@ class CustomLoader extends AbstractLoader {
 }
 ```
 
-## Protocols
+### Protocols
 
 Protocol sets the strategy how to make queries to the gRPC server.
 
@@ -123,7 +122,7 @@ export interface GrpcResponse<Response> {
 
 `invokeBidirectionalStreamingRequest<Request,Response>(..args): BidirectionalStream<Request, Response>`
 
-### gRPC
+#### gRPC
 Uses [@grpc/grpc-js](https://www.npmjs.com/package/@grpc/grpc-js).
 
 ```js
@@ -136,7 +135,7 @@ const protocol = new GrpcProtocol({
 });
 ```
 
-### gRPC-Web
+#### gRPC-Web
 Uses [@improbable-eng/grpc-web](https://www.npmjs.com/package/@improbable-eng/grpc-web).
 
 ⚠️ gRPC-Web supports only **unary** and **server streaming** requests, read more [here](https://github.com/grpc/grpc-web/blob/master/doc/streaming-roadmap.md#client-streaming-and-half-duplex-streaming).
@@ -150,7 +149,7 @@ const protocol = new GrpcWebProtocol({
 });
 ```
 
-### Custom protocol
+#### Custom protocol
 You can write custom protocol implementation by extending `AbstractProtocol` class imported from `@getezy/grpc-client`.
 
 ```ts
@@ -161,5 +160,5 @@ class CustomProtocol extends AbstractProtocol {
 }
 ```
 
-# License
+## License
 Mozilla Public License Version 2.0
