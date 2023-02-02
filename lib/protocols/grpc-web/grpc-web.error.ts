@@ -11,7 +11,6 @@ export class GrpcWebError extends Error {
 
   toObject() {
     return {
-      code: this.code,
       details: this.details,
       metadata: this.metadata?.headersMap,
     };

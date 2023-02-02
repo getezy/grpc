@@ -43,7 +43,7 @@ export class GrpcWebCallStream extends EventEmitter {
         this.emit('headers', headers);
       },
       onEnd: (code, details, metadata) => {
-        if (code !== grpc.Code.OK) {
+        if (code !== 0) {
           this.emit('error', new GrpcWebError(code, details, metadata));
         } else {
           this.emit('end', code, details, metadata);

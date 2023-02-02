@@ -1,11 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 
 import * as grpc from '@grpc/grpc-js';
+import { grpc as grpcWeb } from '@improbable-eng/grpc-web';
 
 import { GrpcStatus } from '@protocols';
 
 import {
-  createClient,
+  createGrpcClient,
+  createGrpcWebClient,
   generateMetadata,
   generatePayload,
   LoaderType,
@@ -40,7 +42,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should throw error if service not found in package definition',
         async ({ loaderType, protocolType }) => {
-          const { client } = await createClient(loaderType, protocolType);
+          const { client } = await createGrpcClient(loaderType, protocolType);
 
           await expect(() =>
             client.invokeUnaryRequest(
@@ -54,7 +56,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should throw error if method not found in package definition',
         async ({ loaderType, protocolType }) => {
-          const { client } = await createClient(loaderType, protocolType);
+          const { client } = await createGrpcClient(loaderType, protocolType);
 
           await expect(() =>
             client.invokeUnaryRequest(
@@ -68,7 +70,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should invoke unary request without metadata',
         async ({ loaderType, protocolType }) => {
-          const { client, SimpleUnaryRequest } = await createClient(loaderType, protocolType);
+          const { client, SimpleUnaryRequest } = await createGrpcClient(loaderType, protocolType);
 
           const [payload] = generatePayload();
           const response = await client.invokeUnaryRequest(
@@ -94,7 +96,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should invoke unary request with metadata',
         async ({ loaderType, protocolType, metadataType }) => {
-          const { client, SimpleUnaryRequest } = await createClient(loaderType, protocolType);
+          const { client, SimpleUnaryRequest } = await createGrpcClient(loaderType, protocolType);
 
           const [payload] = generatePayload();
           const { pureMetadata, metadata } = generateMetadata(metadataType);
@@ -113,7 +115,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should handle unary request error without error code',
         async ({ loaderType, protocolType }) => {
-          const { client } = await createClient(loaderType, protocolType);
+          const { client } = await createGrpcClient(loaderType, protocolType);
 
           // @ts-ignore
           grpc.__setSimpleServicePackageDefinition({
@@ -143,7 +145,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should handle unary request error with error code',
         async ({ loaderType, protocolType }) => {
-          const { client } = await createClient(loaderType, protocolType);
+          const { client } = await createGrpcClient(loaderType, protocolType);
 
           // @ts-ignore
           grpc.__setSimpleServicePackageDefinition({
@@ -176,7 +178,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should throw error if service not found in package definition',
         async ({ loaderType, protocolType }) => {
-          const { client } = await createClient(loaderType, protocolType);
+          const { client } = await createGrpcClient(loaderType, protocolType);
 
           await expect(() =>
             client.invokeClientStreamingRequest({
@@ -190,7 +192,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should throw error if method not found in package definition',
         async ({ loaderType, protocolType }) => {
-          const { client } = await createClient(loaderType, protocolType);
+          const { client } = await createGrpcClient(loaderType, protocolType);
 
           await expect(() =>
             client.invokeClientStreamingRequest({
@@ -204,7 +206,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should invoke client streaming request without metadata',
         async ({ loaderType, protocolType }) => {
-          const { client, SimpleClientStream, SimpleClientStreamRequest } = await createClient(
+          const { client, SimpleClientStream, SimpleClientStreamRequest } = await createGrpcClient(
             loaderType,
             protocolType
           );
@@ -249,7 +251,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should invoke client streaming request with metadata',
         async ({ loaderType, protocolType, metadataType }) => {
-          const { client, SimpleClientStreamRequest } = await createClient(
+          const { client, SimpleClientStreamRequest } = await createGrpcClient(
             loaderType,
             protocolType
           );
@@ -272,7 +274,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should cancel client streaming request',
         async ({ loaderType, protocolType }) => {
-          const { client, SimpleClientStream } = await createClient(loaderType, protocolType);
+          const { client, SimpleClientStream } = await createGrpcClient(loaderType, protocolType);
 
           const call = client.invokeClientStreamingRequest({
             service: 'simple_package.v1.SimpleService',
@@ -297,7 +299,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should handle client streaming request error without error code',
         async ({ loaderType, protocolType }) => {
-          const { client, SimpleClientStream } = await createClient(loaderType, protocolType);
+          const { client, SimpleClientStream } = await createGrpcClient(loaderType, protocolType);
 
           const call = client.invokeClientStreamingRequest({
             service: 'simple_package.v1.SimpleService',
@@ -323,7 +325,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should handle client streaming request error with error code',
         async ({ loaderType, protocolType }) => {
-          const { client, SimpleClientStream } = await createClient(loaderType, protocolType);
+          const { client, SimpleClientStream } = await createGrpcClient(loaderType, protocolType);
 
           const call = client.invokeClientStreamingRequest({
             service: 'simple_package.v1.SimpleService',
@@ -353,7 +355,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should throw error if service not found in package definition',
         async ({ loaderType, protocolType }) => {
-          const { client } = await createClient(loaderType, protocolType);
+          const { client } = await createGrpcClient(loaderType, protocolType);
 
           await expect(() =>
             client.invokeServerStreamingRequest(
@@ -370,7 +372,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should throw error if service not found in package definition',
         async ({ loaderType, protocolType }) => {
-          const { client } = await createClient(loaderType, protocolType);
+          const { client } = await createGrpcClient(loaderType, protocolType);
 
           await expect(() =>
             client.invokeServerStreamingRequest(
@@ -387,7 +389,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should invoke server streaming request without metadata',
         async ({ loaderType, protocolType }) => {
-          const { client, SimpleServerStream, SimpleServerStreamRequest } = await createClient(
+          const { client, SimpleServerStream, SimpleServerStreamRequest } = await createGrpcClient(
             loaderType,
             protocolType
           );
@@ -429,7 +431,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should invoke server streaming request with metadata',
         async ({ loaderType, protocolType, metadataType }) => {
-          const { client, SimpleServerStreamRequest } = await createClient(
+          const { client, SimpleServerStreamRequest } = await createGrpcClient(
             loaderType,
             protocolType
           );
@@ -454,7 +456,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should cancel server streaming request',
         async ({ loaderType, protocolType }) => {
-          const { client, SimpleServerStream } = await createClient(loaderType, protocolType);
+          const { client, SimpleServerStream } = await createGrpcClient(loaderType, protocolType);
 
           const [payload] = generatePayload();
 
@@ -479,7 +481,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should handle server streaming request error without error code',
         async ({ loaderType, protocolType }) => {
-          const { client, SimpleServerStream } = await createClient(loaderType, protocolType);
+          const { client, SimpleServerStream } = await createGrpcClient(loaderType, protocolType);
 
           const [payload] = generatePayload();
 
@@ -510,7 +512,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should handle server streaming request error with error code',
         async ({ loaderType, protocolType }) => {
-          const { client, SimpleServerStream } = await createClient(loaderType, protocolType);
+          const { client, SimpleServerStream } = await createGrpcClient(loaderType, protocolType);
 
           const [payload] = generatePayload();
 
@@ -545,7 +547,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should throw error if service not found in package definition',
         async ({ loaderType, protocolType }) => {
-          const { client } = await createClient(loaderType, protocolType);
+          const { client } = await createGrpcClient(loaderType, protocolType);
 
           await expect(() =>
             client.invokeBidirectionalStreamingRequest(
@@ -562,7 +564,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should throw error if service not found in package definition',
         async ({ loaderType, protocolType }) => {
-          const { client } = await createClient(loaderType, protocolType);
+          const { client } = await createGrpcClient(loaderType, protocolType);
 
           await expect(() =>
             client.invokeBidirectionalStreamingRequest(
@@ -580,7 +582,7 @@ describe('GrpcClient', () => {
         '$type: should invoke bidirectional streaming request without metadata',
         async ({ loaderType, protocolType }) => {
           const { client, SimpleBidirectionalStream, SimpleBidirectionalStreamRequest } =
-            await createClient(loaderType, protocolType);
+            await createGrpcClient(loaderType, protocolType);
 
           const payload = generatePayload(4);
 
@@ -630,7 +632,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should invoke bidirectional streaming request with metadata',
         async ({ loaderType, protocolType, metadataType }) => {
-          const { client, SimpleBidirectionalStreamRequest } = await createClient(
+          const { client, SimpleBidirectionalStreamRequest } = await createGrpcClient(
             loaderType,
             protocolType
           );
@@ -653,7 +655,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should cancel bidirectional streaming request',
         async ({ loaderType, protocolType }) => {
-          const { client, SimpleBidirectionalStream } = await createClient(
+          const { client, SimpleBidirectionalStream } = await createGrpcClient(
             loaderType,
             protocolType
           );
@@ -676,7 +678,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should handle bidirectional streaming request error without error code',
         async ({ loaderType, protocolType }) => {
-          const { client, SimpleBidirectionalStream } = await createClient(
+          const { client, SimpleBidirectionalStream } = await createGrpcClient(
             loaderType,
             protocolType
           );
@@ -705,7 +707,7 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_CLIENTS)(
         '$type: should handle bidirectional streaming request error with error code',
         async ({ loaderType, protocolType }) => {
-          const { client, SimpleBidirectionalStream } = await createClient(
+          const { client, SimpleBidirectionalStream } = await createGrpcClient(
             loaderType,
             protocolType
           );
@@ -736,13 +738,123 @@ describe('GrpcClient', () => {
   });
 
   describe('GrpcClient:GrpcWebProtocol', () => {
-    describe('GrpcClient:GrpcWebProtocol:Unary', () => {});
+    describe('GrpcClient:GrpcWebProtocol:Unary', () => {
+      it.each(ALL_GRPC_WEB_CLIENTS)(
+        '$type: should throw error if service not found in package definition',
+        async ({ loaderType, protocolType }) => {
+          const { client } = await createGrpcWebClient(loaderType, protocolType);
+
+          await expect(() =>
+            client.invokeUnaryRequest(
+              { service: 'simple_package.v1.Test', method: 'SimpleUnaryRequest' },
+              {}
+            )
+          ).toThrowError(`Service "simple_package.v1.Test" not found in package definition`);
+        }
+      );
+
+      it.each(ALL_GRPC_WEB_CLIENTS)(
+        '$type: should throw error if method not found in package definition',
+        async ({ loaderType, protocolType }) => {
+          const { client } = await createGrpcWebClient(loaderType, protocolType);
+
+          await expect(() =>
+            client.invokeUnaryRequest(
+              { service: 'simple_package.v1.SimpleService', method: 'Test' },
+              {}
+            )
+          ).toThrowError(`Method "Test" not found in package definition`);
+        }
+      );
+
+      it.each(ALL_GRPC_WEB_CLIENTS)(
+        '$type: should invoke unary request without metadata',
+        async ({ loaderType, protocolType }) => {
+          const { client } = await createGrpcClient(loaderType, protocolType);
+
+          const [payload] = generatePayload();
+
+          const response = await client.invokeUnaryRequest(
+            { service: 'simple_package.v1.SimpleService', method: 'SimpleUnaryRequest' },
+            payload
+          );
+
+          expect(response).toStrictEqual({
+            code: GrpcStatus.OK,
+            timestamp: expect.anything(),
+            data: payload,
+          });
+
+          expect(grpcWeb.invoke).toBeCalledTimes(1);
+          expect(grpcWeb.invoke).toBeCalledWith(
+            expect.anything(),
+            expect.objectContaining({
+              metadata: new grpcWeb.Metadata(),
+            })
+          );
+        }
+      );
+
+      it.each(ALL_GRPC_WEB_CLIENTS)(
+        '$type: should invoke unary request with metadata',
+        async ({ loaderType, protocolType, metadataType }) => {
+          const { client } = await createGrpcClient(loaderType, protocolType);
+
+          const [payload] = generatePayload();
+          const { pureMetadata, metadata } = generateMetadata(metadataType);
+
+          const response = await client.invokeUnaryRequest(
+            { service: 'simple_package.v1.SimpleService', method: 'SimpleUnaryRequest' },
+            payload,
+            pureMetadata
+          );
+
+          expect(response).toStrictEqual({
+            code: GrpcStatus.OK,
+            timestamp: expect.anything(),
+            data: payload,
+          });
+
+          expect(grpcWeb.invoke).toBeCalledTimes(1);
+          expect(grpcWeb.invoke).toBeCalledWith(
+            expect.anything(),
+            expect.objectContaining({
+              metadata,
+            })
+          );
+        }
+      );
+
+      it.each(ALL_GRPC_WEB_CLIENTS)(
+        '$type: should handle unary request error',
+        async ({ loaderType, protocolType }) => {
+          const { client } = await createGrpcWebClient(loaderType, protocolType);
+
+          // @ts-ignore
+          grpcWeb.__setResponse(GrpcStatus.UNKNOWN);
+
+          const response = await client.invokeUnaryRequest(
+            { service: 'simple_package.v1.SimpleService', method: 'SimpleUnaryRequest' },
+            {}
+          );
+
+          expect(response).toStrictEqual({
+            code: GrpcStatus.UNKNOWN,
+            timestamp: expect.anything(),
+            data: {
+              details: undefined,
+              metadata: undefined,
+            },
+          });
+        }
+      );
+    });
 
     describe('GrpcClient:GrpcWebProtocol:ClientStreaming', () => {
       it.each(ALL_GRPC_WEB_CLIENTS)(
         `$type: should throw error that protocol doesn't support client streaming requests`,
         async ({ loaderType, protocolType }) => {
-          const { client } = await createClient(loaderType, protocolType);
+          const { client } = await createGrpcClient(loaderType, protocolType);
 
           await expect(() =>
             client.invokeClientStreamingRequest({
@@ -754,13 +866,38 @@ describe('GrpcClient', () => {
       );
     });
 
-    describe('GrpcClient:GrpcWebProtocol:ServerStreaming', () => {});
+    describe('GrpcClient:GrpcWebProtocol:ServerStreaming', () => {
+      // it.each(ALL_GRPC_WEB_CLIENTS)(
+      //   '$type: should throw error if service not found in package definition',
+      //   async ({ loaderType, protocolType }) => {
+      //     const { client } = await createGrpcWebClient(loaderType, protocolType);
+      //     await expect(() =>
+      //       client.invokeServerStreamingRequest(
+      //         { service: 'simple_package.v1.Test', method: 'SimpleServerStreamingRequest' },
+      //         {}
+      //       )
+      //     ).toThrowError(`Service "simple_package.v1.Test" not found in package definition`);
+      //   }
+      // );
+      // it.each(ALL_GRPC_WEB_CLIENTS)(
+      //   '$type: should throw error if method not found in package definition',
+      //   async ({ loaderType, protocolType }) => {
+      //     const { client } = await createGrpcWebClient(loaderType, protocolType);
+      //     await expect(() =>
+      //       client.invokeServerStreamingRequest(
+      //         { service: 'simple_package.v1.SimpleService', method: 'Test' },
+      //         {}
+      //       )
+      //     ).toThrowError(`Method "Test" not found in package definition`);
+      //   }
+      // );
+    });
 
     describe('GrpcClient:GrpcWebProtocol:BidirectionalStreaming', () => {
       it.each(ALL_GRPC_WEB_CLIENTS)(
         `$type: should throw error that protocol doesn't support bidirectional streaming requests`,
         async ({ loaderType, protocolType }) => {
-          const { client } = await createClient(loaderType, protocolType);
+          const { client } = await createGrpcWebClient(loaderType, protocolType);
 
           await expect(() =>
             client.invokeBidirectionalStreamingRequest({

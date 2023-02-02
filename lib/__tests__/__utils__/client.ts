@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import * as grpc from '@grpc/grpc-js';
 import * as path from 'node:path';
 
@@ -43,7 +45,7 @@ type AbstractProtocolMetadataValue<T> = T extends AbstractProtocol<infer Metadat
   : T;
 type AbstractProtocolMetadata<T> = T extends AbstractProtocol<any, infer Metadata> ? Metadata : T;
 
-export async function createClient(loaderType: LoaderType, protocolType: ProtocolType) {
+export async function createGrpcClient(loaderType: LoaderType, protocolType: ProtocolType) {
   const {
     SimpleUnaryRequest,
     SimpleServerStreamRequest,
@@ -74,5 +76,19 @@ export async function createClient(loaderType: LoaderType, protocolType: Protoco
     SimpleServerStream,
     SimpleBidirectionalStreamRequest,
     SimpleBidirectionalStream,
+  };
+}
+
+export async function createGrpcWebClient(loaderType: LoaderType, protocolType: ProtocolType) {
+  const loader = createLoader(loaderType);
+
+  const protocol = createProtocol(protocolType);
+  const client = await GrpcClientFactory.create<
+    AbstractProtocolMetadataValue<typeof protocol>,
+    AbstractProtocolMetadata<typeof protocol>
+  >(loader, protocol);
+
+  return {
+    client,
   };
 }
