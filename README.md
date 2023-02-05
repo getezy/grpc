@@ -3,7 +3,8 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/731941e4ddcb4fc7aa675d51dfb55f51)](https://www.codacy.com/gh/getezy/grpc-client/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=getezy/grpc-client&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/731941e4ddcb4fc7aa675d51dfb55f51)](https://www.codacy.com/gh/getezy/grpc-client/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=getezy/grpc-client&amp;utm_campaign=Badge_Coverage)
 
-⚠️ This lib is not production ready until it is merged to main ezy project.
+> **Warning**  
+> This lib is not production ready until it is merged to main ezy project.
 
 ## Installation
 ```bash
@@ -101,12 +102,12 @@ class CustomLoader extends AbstractLoader {
 Uses [@grpc/grpc-js](https://www.npmjs.com/package/@grpc/grpc-js).
 
 ### GrpcWebProtocol
-> **Note**
+> **Note**  
 > Official gRPC-Web implementation has problems with server-streaming responses. Read more [here](https://github.com/grpc/grpc-web/issues/1277).
 
 Uses [@improbable-eng/grpc-web](https://www.npmjs.com/package/@improbable-eng/grpc-web).
 
-> **Warning**
+> **Warning**  
 > gRPC-Web protocol supports only **unary** and **server streaming** requests, follow the streaming roadmap [here](https://github.com/grpc/grpc-web/blob/master/doc/streaming-roadmap.md#client-streaming-and-half-duplex-streaming).
 
 ## License
