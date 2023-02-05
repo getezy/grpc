@@ -126,7 +126,7 @@ export class GrpcWebProtocol extends AbstractProtocol<GrpcWebMetadataValue, grpc
 
     call.on('error', (error: GrpcWebError) => {
       emitter.emit('error', {
-        code: (error.code || GrpcStatus.UNKNOWN) as GrpcStatus,
+        code: error.code as unknown as GrpcStatus,
         timestamp: new Date().getTime(),
         data: error.toObject(),
       });

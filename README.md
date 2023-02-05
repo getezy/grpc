@@ -3,16 +3,24 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/731941e4ddcb4fc7aa675d51dfb55f51)](https://www.codacy.com/gh/getezy/grpc-client/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=getezy/grpc-client&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/731941e4ddcb4fc7aa675d51dfb55f51)](https://www.codacy.com/gh/getezy/grpc-client/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=getezy/grpc-client&amp;utm_campaign=Badge_Coverage)
 
-> ⚠️ This lib is not production ready until it is merged to main ezy project.
+⚠️ This lib is not production ready until it is merged to main ezy project.
 
-## Install
+## Installation
 ```bash
-npm install @getezy/grpc-client
+npm i @getezy/grpc-client
 ```
 
 ## Usage
+This library was designed to be extendable as much as possible.
+To start you need `GrpcClient`, `Loader` and `Protocol`.
+
+Use `GrpcClientFactory` for creating `GrpcClient` instance.
+
+`GrpcClientFactory.create(loader: AbstractLoader, protocol: AbstractProtocol): Promise<GrpcClient>`
+
 ```ts
 import { GrpcClientFactory, GrpcProtocol, ProtobufLoader, GrpcTlsType } from '@getezy/grpc-client';
+import * as path from 'node:path';
 
 const client = await GrpcClientFactory.create(
   new ProtobufLoader(path.join(__dirname, '../proto/main.proto')),
@@ -28,25 +36,13 @@ const response = await client.invokeUnaryRequest<Request, Response>(
 );
 ```
 
-### Loaders
-Loader sets the strategy how to load gRPC package definitions.
+## Loaders
+`Loader` - is the strategy defines how to load gRPC package definitions.
 
-#### ProtobufLoader
+### ProtobufLoader
 Uses [@grpc/proto-loader](https://www.npmjs.com/package/@grpc/proto-loader) for load protobuf definition from the giving path.
 
-Refer to [@grpc/proto-loader](https://www.npmjs.com/package/@grpc/proto-loader) documentation to see available options.
-
-⚠️ Overided default options are:
-```js
-// Preserve field names. The default is to change them to camel case.
-keepCase: true,
-// Set default values on output objects. Defaults to false.
-defaults: true,
-// A list of search paths for imported .proto files.
-includeDirs: [],
-// The type to use to represent long values. Defaults to a Long object type.
-longs: String,
-```
+`new ProtobufLoader(path: string, [options])`
 
 ```ts
 import { ProtobufLoader } from '@getezy/grpc-client';
@@ -58,18 +54,38 @@ const loader = new ProtobufLoader(
     defaults: false,
   }
 );
-
-const definition = await loader.load();
 ```
 
-#### ReflectionLoader
+Refer to `@grpc/proto-loader` [documentation](https://github.com/grpc/grpc-node/tree/master/packages/proto-loader#usage) to see available options.
+
+Default options are:
+```ts
+{
+  // Preserve field names. The default
+  // is to change them to camel case.
+  keepCase: true,
+
+  // Set default values on output objects.
+  // Defaults to false.
+  defaults: true,
+
+  // A list of search paths for imported .proto files.
+  includeDirs: [],
+
+  // The type to use to represent long values.
+  // Defaults to a Long object type.
+  longs: String,
+}
+```
+
+### ReflectionLoader
 Loader by reflection API is coming soon.
 
-#### Custom loader
+### CustomLoader
 You can write custom loader implementation by extending `AbstractLoader` class imported from `@getezy/grpc-client`.
 
 ```ts
-import { AbstractLoader, GrpcServiceDefinition } from '@getezy/grpc-client';
+import { AbstractLoader } from '@getezy/grpc-client';
 
 class CustomLoader extends AbstractLoader {
   public async load(): Promise<void> {
@@ -78,82 +94,20 @@ class CustomLoader extends AbstractLoader {
 }
 ```
 
-### Protocols
+## Protocols
+`Protocol` - is the strategy defines how to make queries to the gRPC server.
 
-Protocol sets the strategy how to make queries to the gRPC server.
-
-Each protocol extended from `AbstractProtocol` and implements the same API:
-
-`invokeUnaryRequest<Request,Response>(..args): Promise<GrpcResponse<Response>>`
-
-Basic response from gRPC servers contains:
-```js
-import { GrpcStatus } from '@getezy/grpc-client';
-
-export interface GrpcErrorResponseValue {
-  details?: string;
-  metadata?: Record<string, unknown>;
-}
-
-export interface GrpcResponse<Response> {
-  /**
-   * Status code of gRPC request
-   */
-  code: GrpcStatus;
-
-  /**
-   * For unary requests - query execution time in milliseconds.
-   * For streaming requests - receiving response actual time in utc.
-   */
-  timestamp: number;
-
-  data: Response | GrpcErrorResponseValue;
-}
-```
-
-`invokeClientStreamingRequest<Request,Response>(..args): ClientStream<Request, Response>`
-
-`invokeServerStreamingRequest<Request,Response>(..args): ServerStream<Response>`
-
-`invokeBidirectionalStreamingRequest<Request,Response>(..args): BidirectionalStream<Request, Response>`
-
-#### gRPC
+### GrpcProtocol
 Uses [@grpc/grpc-js](https://www.npmjs.com/package/@grpc/grpc-js).
 
-```js
-import { GrpcProtocol, GrpcTlsType } from '@getezy/grpc-client';
+### GrpcWebProtocol
+> **Note**
+> Official gRPC-Web implementation has problems with server-streaming responses. Read more [here](https://github.com/grpc/grpc-web/issues/1277).
 
-const protocol = new GrpcProtocol({
-  address: '10.10.10.10',
-  tls: { type: GrpcTlsType.INSECURE },
-  channelOptions: { sslTargetNameOverride: 'test' },
-});
-```
-
-#### gRPC-Web
 Uses [@improbable-eng/grpc-web](https://www.npmjs.com/package/@improbable-eng/grpc-web).
 
-⚠️ gRPC-Web supports only **unary** and **server streaming** requests, read more [here](https://github.com/grpc/grpc-web/blob/master/doc/streaming-roadmap.md#client-streaming-and-half-duplex-streaming).
-
-```js
-import { GrpcWebProtocol, GrpcTlsType } from '@getezy/grpc-client';
-
-const protocol = new GrpcWebProtocol({
-  address: '10.10.10.10',
-  tls: { type: GrpcTlsType.INSECURE },
-});
-```
-
-#### Custom protocol
-You can write custom protocol implementation by extending `AbstractProtocol` class imported from `@getezy/grpc-client`.
-
-```ts
-import { AbstractProtocol } from '@getezy/grpc-client';
-
-class CustomProtocol extends AbstractProtocol {
-  // custom protocol implementation
-}
-```
+> **Warning**
+> gRPC-Web protocol supports only **unary** and **server streaming** requests, follow the streaming roadmap [here](https://github.com/grpc/grpc-web/blob/master/doc/streaming-roadmap.md#client-streaming-and-half-duplex-streaming).
 
 ## License
 Mozilla Public License Version 2.0
