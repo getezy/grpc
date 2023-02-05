@@ -69,17 +69,14 @@ class NodeHttp implements grpc.Transport {
   finishSend() {}
 
   responseCallback(response: http.IncomingMessage) {
-    this.options.debug && console.log('NodeHttp.response', response.statusCode);
     const headers = filterHeadersForUndefined(response.headers);
     this.options.onHeaders(new grpc.Metadata(headers), response.statusCode!);
 
     response.on('data', (chunk) => {
-      this.options.debug && console.log('NodeHttp.data', chunk);
       this.options.onChunk(toArrayBuffer(chunk as Buffer));
     });
 
     response.on('end', () => {
-      this.options.debug && console.log('NodeHttp.end');
       this.options.onEnd();
     });
   }
@@ -107,14 +104,12 @@ class NodeHttp implements grpc.Transport {
       this.request = http.request(httpOptions, this.responseCallback.bind(this));
     }
     this.request.on('error', (err) => {
-      this.options.debug && console.log('NodeHttp.error', err);
       this.options.onEnd(err);
     });
   }
 
   cancel() {
-    this.options.debug && console.log('NodeHttp.abort');
-    this.request.abort();
+    this.request.destroy();
   }
 }
 

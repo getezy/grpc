@@ -21,6 +21,7 @@ import {
   ServerStream,
 } from '@protocols';
 
+import { GrpcWebError } from './grpc-web.error';
 import { GrpcWebCallStream } from './grpc-web-call.stream';
 import { GrpcWebMetadataParser } from './grpc-web-metadata.parser';
 import { GrpcWebMetadataValue, instanceOfProtobufMethodDefinition } from './interfaces';
@@ -79,9 +80,65 @@ export class GrpcWebProtocol extends AbstractProtocol<GrpcWebMetadataValue, grpc
   public invokeServerStreamingRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
     Response extends GrpcResponseValue = GrpcResponseValue
-  >(): ServerStream<Response> {
-    const a: Request = {} as Request;
-    throw new Error('unimplemented', a);
+  >(
+    packageDefinition: PackageDefinition,
+    requestOptions: GrpcRequestOptions,
+    payload: Request,
+    metadata?: Record<string, GrpcWebMetadataValue>
+  ): ServerStream<Response> {
+    const methodDefinition = this.loadMethodDefinition<grpc.ProtobufMessage, grpc.ProtobufMessage>(
+      packageDefinition,
+      requestOptions
+    );
+
+    const emitter = new ServerStream();
+
+    const call = new GrpcWebCallStream(
+      methodDefinition,
+      {
+        host: this.getUrl(),
+        // @ts-ignore
+        request: {
+          // @ts-ignore
+          serializeBinary: () => methodDefinition.requestType.serializeBinary(payload),
+        },
+        metadata: this.parseMetadata(metadata),
+      },
+      this.getRequestOptions()
+    );
+
+    this.subsribeOnServerStreamingEvents(emitter, call);
+
+    return emitter;
+  }
+
+  private subsribeOnServerStreamingEvents<Response extends GrpcResponseValue = GrpcResponseValue>(
+    emitter: ServerStream<Response>,
+    call: GrpcWebCallStream
+  ) {
+    call.on('response', (response) => {
+      emitter.emit('response', {
+        code: GrpcStatus.OK,
+        timestamp: new Date().getTime(),
+        data: response,
+      });
+    });
+
+    call.on('error', (error: GrpcWebError) => {
+      emitter.emit('error', {
+        code: (error.code || GrpcStatus.UNKNOWN) as GrpcStatus,
+        timestamp: new Date().getTime(),
+        data: error.toObject(),
+      });
+    });
+
+    call.on('end', () => {
+      emitter.emit('end');
+    });
+
+    emitter.on('cancel', () => {
+      call.cancel();
+    });
   }
 
   public invokeClientStreamingRequest<

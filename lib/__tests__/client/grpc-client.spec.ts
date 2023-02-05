@@ -1,15 +1,20 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-underscore-dangle */
 
+// import { grpcResponseToBuffer } from '@cloudnc/grpc-web-testing-toolbox/base';
 import * as grpc from '@grpc/grpc-js';
 import { grpc as grpcWeb } from '@improbable-eng/grpc-web';
+import nock from 'nock';
 
 import { GrpcStatus } from '@protocols';
 
+import { SimpleMessage } from '../__fixtures__/proto/generated/v3';
 import {
   createGrpcClient,
   createGrpcWebClient,
   generateMetadata,
   generatePayload,
+  grpcWebResponseToBuffer,
   LoaderType,
   MetadataType,
   ProtocolType,
@@ -738,6 +743,10 @@ describe('GrpcClient', () => {
   });
 
   describe('GrpcClient:GrpcWebProtocol', () => {
+    beforeEach(() => {
+      nock.cleanAll();
+    });
+
     describe('GrpcClient:GrpcWebProtocol:Unary', () => {
       it.each(ALL_GRPC_WEB_CLIENTS)(
         '$type: should throw error if service not found in package definition',
@@ -770,9 +779,19 @@ describe('GrpcClient', () => {
       it.each(ALL_GRPC_WEB_CLIENTS)(
         '$type: should invoke unary request without metadata',
         async ({ loaderType, protocolType }) => {
-          const { client } = await createGrpcClient(loaderType, protocolType);
+          const { client } = await createGrpcWebClient(loaderType, protocolType);
 
           const [payload] = generatePayload();
+
+          const buffer = grpcWebResponseToBuffer([SimpleMessage.encode(payload).finish()]);
+
+          nock('http://10.10.10.10')
+            .post('/simple_package.v1.SimpleService/SimpleUnaryRequest')
+            .once()
+            .reply(200, buffer, {
+              'content-type': 'application/grpc-web+proto',
+              'grpc-status': '0',
+            });
 
           const response = await client.invokeUnaryRequest(
             { service: 'simple_package.v1.SimpleService', method: 'SimpleUnaryRequest' },
@@ -797,11 +816,21 @@ describe('GrpcClient', () => {
 
       it.each(ALL_GRPC_WEB_CLIENTS)(
         '$type: should invoke unary request with metadata',
-        async ({ loaderType, protocolType, metadataType }) => {
-          const { client } = await createGrpcClient(loaderType, protocolType);
+        async ({ loaderType, protocolType }) => {
+          const { client } = await createGrpcWebClient(loaderType, protocolType);
 
           const [payload] = generatePayload();
-          const { pureMetadata, metadata } = generateMetadata(metadataType);
+          const { pureMetadata, metadata } = generateMetadata(MetadataType.GrpcWeb);
+
+          const buffer = grpcWebResponseToBuffer([SimpleMessage.encode(payload).finish()]);
+
+          nock('http://10.10.10.10')
+            .post('/simple_package.v1.SimpleService/SimpleUnaryRequest')
+            .once()
+            .reply(200, buffer, {
+              'content-type': 'application/grpc-web+proto',
+              'grpc-status': '0',
+            });
 
           const response = await client.invokeUnaryRequest(
             { service: 'simple_package.v1.SimpleService', method: 'SimpleUnaryRequest' },
@@ -830,8 +859,13 @@ describe('GrpcClient', () => {
         async ({ loaderType, protocolType }) => {
           const { client } = await createGrpcWebClient(loaderType, protocolType);
 
-          // @ts-ignore
-          grpcWeb.__setResponse(GrpcStatus.UNKNOWN);
+          nock('http://10.10.10.10')
+            .post('/simple_package.v1.SimpleService/SimpleUnaryRequest')
+            .once()
+            .reply(200, undefined, {
+              'content-type': 'application/grpc-web+proto',
+              'grpc-status': '10',
+            });
 
           const response = await client.invokeUnaryRequest(
             { service: 'simple_package.v1.SimpleService', method: 'SimpleUnaryRequest' },
@@ -839,12 +873,9 @@ describe('GrpcClient', () => {
           );
 
           expect(response).toStrictEqual({
-            code: GrpcStatus.UNKNOWN,
+            code: GrpcStatus.ABORTED,
             timestamp: expect.anything(),
-            data: {
-              details: undefined,
-              metadata: undefined,
-            },
+            data: expect.anything(),
           });
         }
       );
@@ -867,30 +898,200 @@ describe('GrpcClient', () => {
     });
 
     describe('GrpcClient:GrpcWebProtocol:ServerStreaming', () => {
-      // it.each(ALL_GRPC_WEB_CLIENTS)(
-      //   '$type: should throw error if service not found in package definition',
-      //   async ({ loaderType, protocolType }) => {
-      //     const { client } = await createGrpcWebClient(loaderType, protocolType);
-      //     await expect(() =>
-      //       client.invokeServerStreamingRequest(
-      //         { service: 'simple_package.v1.Test', method: 'SimpleServerStreamingRequest' },
-      //         {}
-      //       )
-      //     ).toThrowError(`Service "simple_package.v1.Test" not found in package definition`);
-      //   }
-      // );
-      // it.each(ALL_GRPC_WEB_CLIENTS)(
-      //   '$type: should throw error if method not found in package definition',
-      //   async ({ loaderType, protocolType }) => {
-      //     const { client } = await createGrpcWebClient(loaderType, protocolType);
-      //     await expect(() =>
-      //       client.invokeServerStreamingRequest(
-      //         { service: 'simple_package.v1.SimpleService', method: 'Test' },
-      //         {}
-      //       )
-      //     ).toThrowError(`Method "Test" not found in package definition`);
-      //   }
-      // );
+      it.each(ALL_GRPC_WEB_CLIENTS)(
+        '$type: should throw error if service not found in package definition',
+        async ({ loaderType, protocolType }) => {
+          const { client } = await createGrpcWebClient(loaderType, protocolType);
+          await expect(() =>
+            client.invokeServerStreamingRequest(
+              { service: 'simple_package.v1.Test', method: 'SimpleServerStreamingRequest' },
+              {}
+            )
+          ).toThrowError(`Service "simple_package.v1.Test" not found in package definition`);
+        }
+      );
+
+      it.each(ALL_GRPC_WEB_CLIENTS)(
+        '$type: should throw error if method not found in package definition',
+        async ({ loaderType, protocolType }) => {
+          const { client } = await createGrpcWebClient(loaderType, protocolType);
+          await expect(() =>
+            client.invokeServerStreamingRequest(
+              { service: 'simple_package.v1.SimpleService', method: 'Test' },
+              {}
+            )
+          ).toThrowError(`Method "Test" not found in package definition`);
+        }
+      );
+
+      it.each(ALL_GRPC_WEB_CLIENTS)(
+        '$type: should invoke server streaming request with metadata',
+        async ({ loaderType, protocolType }) => {
+          const { client } = await createGrpcWebClient(loaderType, protocolType);
+
+          const payload = generatePayload(3);
+          const { pureMetadata, metadata } = generateMetadata(MetadataType.GrpcWeb);
+
+          const buffer = grpcWebResponseToBuffer([
+            SimpleMessage.encode(payload[0]).finish(),
+            SimpleMessage.encode(payload[1]).finish(),
+          ]);
+
+          nock('http://10.10.10.10')
+            .post('/simple_package.v1.SimpleService/SimpleServerStreamRequest')
+            .once()
+            .reply(200, buffer, {
+              'content-type': 'application/grpc-web+proto',
+              'grpc-status': '0',
+            });
+
+          const call = client.invokeServerStreamingRequest(
+            { service: 'simple_package.v1.SimpleService', method: 'SimpleServerStreamRequest' },
+            payload[2],
+            pureMetadata
+          );
+
+          const emitSpy = jest.spyOn(call, 'emit');
+
+          expect(grpcWeb.invoke).toBeCalledTimes(1);
+          expect(grpcWeb.invoke).toBeCalledWith(
+            expect.anything(),
+            expect.objectContaining({
+              metadata,
+            })
+          );
+
+          const response: any[] = [];
+          return new Promise((resolve) => {
+            call.on('response', (message) => {
+              response.push(message);
+            });
+
+            call.on('end', () => resolve(true));
+          }).then(() => {
+            expect(emitSpy).toBeCalledTimes(3);
+            expect(response).toStrictEqual([
+              { code: GrpcStatus.OK, timestamp: expect.anything(), data: payload[0] },
+              { code: GrpcStatus.OK, timestamp: expect.anything(), data: payload[1] },
+            ]);
+          });
+        }
+      );
+
+      it.each(ALL_GRPC_WEB_CLIENTS)(
+        '$type: should invoke server streaming request without metadata',
+        async ({ loaderType, protocolType }) => {
+          const { client } = await createGrpcWebClient(loaderType, protocolType);
+
+          const payload = generatePayload(2);
+
+          const buffer = grpcWebResponseToBuffer([SimpleMessage.encode(payload[0]).finish()]);
+
+          nock('http://10.10.10.10')
+            .post('/simple_package.v1.SimpleService/SimpleServerStreamRequest')
+            .once()
+            .reply(200, buffer, {
+              'content-type': 'application/grpc-web+proto',
+              'grpc-status': '0',
+            });
+
+          client.invokeServerStreamingRequest(
+            { service: 'simple_package.v1.SimpleService', method: 'SimpleServerStreamRequest' },
+            payload[1]
+          );
+
+          expect(grpcWeb.invoke).toBeCalledTimes(1);
+          expect(grpcWeb.invoke).toBeCalledWith(
+            expect.anything(),
+            expect.objectContaining({
+              metadata: new grpcWeb.Metadata(),
+            })
+          );
+        }
+      );
+
+      it.each(ALL_GRPC_WEB_CLIENTS)(
+        '$type: should cancel server streaming request',
+        async ({ loaderType, protocolType }) => {
+          const { client } = await createGrpcWebClient(loaderType, protocolType);
+
+          const payload = generatePayload(2);
+
+          const buffer = grpcWebResponseToBuffer([SimpleMessage.encode(payload[0]).finish()]);
+
+          nock('http://10.10.10.10')
+            .post('/simple_package.v1.SimpleService/SimpleServerStreamRequest')
+            .once()
+            .reply(200, buffer, {
+              'content-type': 'application/grpc-web+proto',
+              'grpc-status': '0',
+            });
+
+          const call = client.invokeServerStreamingRequest(
+            { service: 'simple_package.v1.SimpleService', method: 'SimpleServerStreamRequest' },
+            payload[1]
+          );
+
+          const emitSpy = jest.spyOn(call, 'emit');
+          call.cancel();
+
+          expect(emitSpy).toHaveBeenNthCalledWith(1, 'cancel');
+
+          expect(grpcWeb.invoke).toBeCalledTimes(1);
+          expect(grpcWeb.invoke).toBeCalledWith(
+            expect.anything(),
+            expect.objectContaining({
+              metadata: new grpcWeb.Metadata(),
+            })
+          );
+        }
+      );
+
+      it.each(ALL_GRPC_WEB_CLIENTS)(
+        '$type: should handle server streaming request error with error code',
+        async ({ loaderType, protocolType }) => {
+          const { client } = await createGrpcWebClient(loaderType, protocolType);
+
+          const [payload] = generatePayload(1);
+
+          const buffer = grpcWebResponseToBuffer([], GrpcStatus.ABORTED);
+
+          nock('http://10.10.10.10')
+            .post('/simple_package.v1.SimpleService/SimpleServerStreamRequest')
+            .once()
+            .reply(200, buffer, {
+              'content-type': 'application/grpc-web+proto',
+            });
+
+          const call = client.invokeServerStreamingRequest(
+            { service: 'simple_package.v1.SimpleService', method: 'SimpleServerStreamRequest' },
+            payload
+          );
+
+          const emitSpy = jest.spyOn(call, 'emit');
+
+          let error: any;
+          return new Promise((resolve) => {
+            call.on('error', (message) => {
+              error = message;
+              return resolve(true);
+            });
+          }).then(() => {
+            expect(emitSpy).toBeCalledTimes(1);
+            expect(error).toStrictEqual({
+              code: GrpcStatus.ABORTED,
+              timestamp: expect.anything(),
+              data: {
+                details: GrpcStatus.ABORTED.toString(),
+                metadata: {
+                  'grpc-status': [GrpcStatus.ABORTED.toString()],
+                  'grpc-message': [GrpcStatus.ABORTED.toString()],
+                },
+              },
+            });
+          });
+        }
+      );
     });
 
     describe('GrpcClient:GrpcWebProtocol:BidirectionalStreaming', () => {

@@ -133,4 +133,4 @@ export const __setSimpleServicePackageDefinition = ({ unary }: SimpleServiceMock
 
 export const loadPackageDefinition = () => PACKAGE_DEFINITION_MOCK;
 
-export const { credentials, Metadata } = originalModule;
+export const { credentials, Metadata, status } = originalModule;

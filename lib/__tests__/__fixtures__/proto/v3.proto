@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package simple_package.v1;
 
-import "google/protobuf/empty.proto";
-
 message SimpleMessage {
   string id = 1;
 }

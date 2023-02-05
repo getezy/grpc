@@ -2,8 +2,6 @@ syntax = "proto2";
 
 package simple_package.v1;
 
-import "google/protobuf/empty.proto";
-
 message SimpleMessage {
   required string id = 1;
 }
@@ -13,7 +11,7 @@ service SimpleService {
 
   rpc SimpleClientStreamRequest(stream SimpleMessage) returns (SimpleMessage);
 
-  rpc SimpleServerStreamRequest(google.protobuf.Empty)
+  rpc SimpleServerStreamRequest(SimpleMessage)
     returns (stream SimpleMessage);
 
   rpc SimpleBidirectionalStreamRequest(stream SimpleMessage)

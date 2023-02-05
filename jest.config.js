@@ -19,7 +19,7 @@ const config = {
   moduleFileExtensions: ['js', 'ts'],
   testEnvironment: 'node',
   testPathIgnorePatterns: ['<rootDir>/__tests__/__utils__/'],
-  coveragePathIgnorePatterns: ['<rootDir>/__tests__/__utils__/'],
+  coveragePathIgnorePatterns: ['<rootDir>/__tests__/'],
   testRegex: '.spec.ts$',
   transform: {
     '.+\\.(t|j)s$': [
