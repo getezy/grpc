@@ -1,7 +1,7 @@
 {
   "name": "@getezy/grpc-client",
   "version": "1.0.0",
-  "description": "Universal gRPC/gRPC-Web client library used in ezy.",
+  "description": "Universal, extendable, typesafe gRPC/gRPC-Web client for node used in ezy.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
