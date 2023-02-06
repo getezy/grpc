@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as https from 'https';
 import lodashGet from 'lodash.get';
 import { performance } from 'perf_hooks';
+import { SetOptional } from 'type-fest';
 
 import {
   AbstractProtocol,
@@ -27,7 +28,7 @@ import { GrpcWebMetadataParser } from './grpc-web-metadata.parser';
 import { GrpcWebMetadataValue, instanceOfProtobufMethodDefinition } from './interfaces';
 
 export class GrpcWebProtocol extends AbstractProtocol<GrpcWebMetadataValue, grpc.Metadata> {
-  constructor(options: AbstractProtocolOptions) {
+  constructor(options: SetOptional<AbstractProtocolOptions, 'tls'>) {
     super(options, new GrpcWebMetadataParser());
   }
 

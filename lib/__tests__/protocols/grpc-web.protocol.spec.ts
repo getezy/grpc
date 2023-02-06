@@ -102,14 +102,11 @@ describe('GrpcWebProtocol', () => {
       );
     });
 
-    it('should set credentials for insecure TLS connection without protocol in url', async () => {
+    it('should set credentials for insecure TLS connection if TLS not specified', async () => {
       const spy = jest.spyOn(grpcWeb, 'invoke');
 
       const protocol = new GrpcWebProtocol({
         address: '10.10.10.10',
-        tls: {
-          type: GrpcTlsType.INSECURE,
-        },
       });
 
       await protocol.invokeUnaryRequest(

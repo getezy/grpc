@@ -11,6 +11,7 @@ import * as grpc from '@grpc/grpc-js';
 import type { PackageDefinition } from '@grpc/proto-loader';
 import lodashGet from 'lodash.get';
 import * as fs from 'node:fs';
+import { SetOptional } from 'type-fest';
 
 import {
   AbstractProtocol,
@@ -32,9 +33,9 @@ import {
 import { GrpcMetadataParser } from './grpc-metadata.parser';
 
 export class GrpcProtocol extends AbstractProtocol<MetadataValue, grpc.Metadata> {
-  public readonly channelOptions?: GrpcChannelOptions;
+  private readonly channelOptions?: GrpcChannelOptions;
 
-  constructor({ channelOptions, ...options }: GrpcProtocolOptions) {
+  constructor({ channelOptions, ...options }: SetOptional<GrpcProtocolOptions, 'tls'>) {
     super(options, new GrpcMetadataParser());
 
     this.channelOptions = channelOptions;

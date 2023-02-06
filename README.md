@@ -20,12 +20,12 @@ Use `GrpcClientFactory` for creating `GrpcClient` instance.
 `GrpcClientFactory.create(loader: AbstractLoader, protocol: AbstractProtocol): Promise<GrpcClient>`
 
 ```ts
-import { GrpcClientFactory, GrpcProtocol, ProtobufLoader, GrpcTlsType } from '@getezy/grpc-client';
+import { GrpcClientFactory, GrpcProtocol, ProtobufLoader } from '@getezy/grpc-client';
 import * as path from 'node:path';
 
 const client = await GrpcClientFactory.create(
   new ProtobufLoader(path.join(__dirname, '../proto/main.proto')),
-  new GrpcProtocol({ address: '10.10.10.10', tls: { type: GrpcTlsType.INSECURE } })
+  new GrpcProtocol({ address: '10.10.10.10' })
 );
 
 const payload = { id: '21443e83-d6ab-45b7-9afd-65b2e0ee8957' };
@@ -126,7 +126,6 @@ if (response.code !== GrpcStatus.OK) {
 }
 ```
 
-
 ### Client-Streaming Request
 ```ts
 const stream = client.invokeClientStreamingRequest({
@@ -165,7 +164,6 @@ Cancel the stream.
 `stream.end()`  
 End the stream.
 
-
 ### Server-Streaming Request
 ```ts
 const stream = client.invokeServerStreamingRequest(
@@ -198,7 +196,6 @@ Subscribe on server error.
 #### Methods:
 `stream.cancel()`  
 Cancel the stream.
-
 
 ### Bidirectional-Streaming Request
 ```ts
@@ -244,12 +241,56 @@ Cancel the stream.
 End the client stream.
 
 ## TLS
+Read [this article](https://itnext.io/how-to-setup-and-test-tls-in-grpc-grpc-web-1b67cc4413e6) to understand how TLS works in gRPC and gRPC-Web.
+
+Each protocol accepts TLS options, if TLS options are not specified Insecure connection will be used by default.
 
 ### Insecure
+```ts
+import { GrpcProtocol, GrpcTlsType } from '@getezy/grpc-client';
+
+const protocol = new GrpcProtocol({
+  address: '10.10.10.10',
+  tls: {
+    type: GrpcTlsType.INSECURE,
+  },
+});
+```
 
 ### Server-Side TLS
+```ts
+import * as path from 'node:path';
+import { GrpcProtocol, GrpcTlsType } from '@getezy/grpc-client';
+
+const protocol = new GrpcProtocol({
+  address: '10.10.10.10',
+  tls: {
+    tls: {
+      type: GrpcTlsType.SERVER_SIDE,
+      rootCertificatePath: path.join(__dirname, '../certs/ca-cert.pem')
+    },
+  },
+});
+```
+
+> **Note**
+> rootCertificatePath - is optional, usually used if your server has self-signed CA
 
 ### Mutual TLS
+```ts
+const protocol = new GrpcProtocol({
+  address: '10.10.10.10',
+  tls: {
+    type: GrpcTlsType.MUTUAL,
+    rootCertificatePath: path.join(__dirname, '../certs/ca-cert.pem'),
+    clientCertificatePath: path.join(__dirname, '../certs/client-cert.pem');
+    clientKeyPath: path.join(__dirname, '../certs/client-key.pem');
+  },
+});
+```
+
+> **Note**
+> rootCertificatePath - is optional, usually used if your server has self-signed CA
 
 ## Loaders
 `Loader` - is the strategy defines how to load gRPC package definitions.

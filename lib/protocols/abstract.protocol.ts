@@ -1,4 +1,5 @@
 import type { PackageDefinition } from '@grpc/proto-loader';
+import { SetOptional } from 'type-fest';
 
 import {
   AbstractMetadataParser,
@@ -9,6 +10,7 @@ import {
   GrpcRequestValue,
   GrpcResponse,
   GrpcResponseValue,
+  GrpcTlsType,
   ServerStream,
 } from '@protocols';
 
@@ -16,10 +18,17 @@ import {
  * AbstractProtocol used for make queries to grpc server
  */
 export abstract class AbstractProtocol<MetadataValue, Metadata> {
+  protected readonly options: AbstractProtocolOptions;
+
   constructor(
-    protected readonly options: AbstractProtocolOptions,
+    options: SetOptional<AbstractProtocolOptions, 'tls'>,
     protected readonly metadataParser: AbstractMetadataParser<MetadataValue, Metadata>
-  ) {}
+  ) {
+    this.options = {
+      tls: { type: GrpcTlsType.INSECURE },
+      ...options,
+    };
+  }
 
   public abstract invokeUnaryRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,

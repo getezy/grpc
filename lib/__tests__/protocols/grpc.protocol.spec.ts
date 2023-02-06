@@ -48,6 +48,23 @@ describe('GrpcProtocol', () => {
       expect(spy).toHaveBeenCalledWith();
     });
 
+    it('should set credentials for insecure TLS connection if TLS not specified', async () => {
+      const spy = jest.spyOn(grpc.credentials, 'createInsecure');
+
+      const protocol = new GrpcProtocol({
+        address: '10.10.10.10',
+      });
+
+      await protocol.invokeUnaryRequest(
+        loader.getPackageDefinition(),
+        { service: 'simple_package.v1.SimpleService', method: 'SimpleUnaryRequest' },
+        {}
+      );
+
+      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith();
+    });
+
     it('should set credentials for server-side TLS connection without root certificate', async () => {
       const spy = jest.spyOn(grpc.credentials, 'createSsl');
 
