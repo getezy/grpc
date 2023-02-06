@@ -1,5 +1,5 @@
 {
-  "name": "grpc-client",
+  "name": "@getezy/grpc-client",
   "version": "1.0.0",
   "description": "Universal gRPC/gRPC-Web client library used in ezy.",
   "main": "dist/index.js",
@@ -62,6 +62,6 @@
     "@improbable-eng/grpc-web": "0.15.0",
     "lodash.get": "4.4.2",
     "tiny-typed-emitter": "2.1.0",
-    "type-fest": "^3.5.5"
+    "type-fest": "3.5.5"
   }
 }
