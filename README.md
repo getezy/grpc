@@ -78,11 +78,42 @@ interface GrpcRequestOptions {
 
 ### Unary Request
 
-### Client Streaming Request
+### Client-Streaming Request
 
-### Server Streaming Request
+```ts
+  const stream = client.invokeClientStreamingRequest({
+    service: 'simple_package.v1.SimpleService',
+    method: 'SimpleClientStreamRequest',
+  });
 
-### Bidirectional Streaming Request
+  stream.on('response', (response) => {});
+
+  stream.write({ id: '21443e83-d6ab-45b7-9afd-65b2e0ee8957' });
+  stream.end();
+```
+
+`ClientStream` extended from `EventEmitter`.
+
+#### Events:
+
+`stream.on('response', (response: GrpcResponse<Response>) => {})`
+`stream.on('error', (response: GrpcResponse<Response>) => {})`
+
+#### Methods:
+
+`stream.write(payload: Request)`
+Send data to the stream.
+
+`stream.cancel()`
+Cancels the stream.
+
+`stream.end()`
+Ends the client stream.
+
+
+### Server-Streaming Request
+
+### Bidirectional-Streaming Request
 
 ## TLS
 
@@ -177,7 +208,7 @@ Uses [@improbable-eng/grpc-web](https://www.npmjs.com/package/@improbable-eng/gr
 > Official gRPC-Web implementation has problems with server-streaming responses. Read more [here](https://github.com/grpc/grpc-web/issues/1277).
 
 > **Warning**  
-> gRPC-Web protocol supports only **unary** and **server streaming** requests, follow the streaming roadmap [here](https://github.com/grpc/grpc-web/blob/master/doc/streaming-roadmap.md#client-streaming-and-half-duplex-streaming).
+> gRPC-Web protocol supports only **unary** and **server-streaming** requests, follow the streaming roadmap [here](https://github.com/grpc/grpc-web/blob/master/doc/streaming-roadmap.md#client-streaming-and-half-duplex-streaming). When you will try to call client or bidirectional streaming request with this protocol you will get the error.
 
 `new GrpcWebProtocol(options: AbstractProtocolOptions)`
 
@@ -190,7 +221,7 @@ const protocol = new GrpcWebProtocol({
 });
 ```
 
-#### Custom protocol
+### Custom protocol
 You can write custom protocol implementation by extending `AbstractProtocol` class imported from `@getezy/grpc-client`.
 
 ```ts
