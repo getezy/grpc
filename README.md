@@ -66,7 +66,7 @@ class GrpcClient<MetadataValue, Metadata> {
 }
 ```
 
-The first argument in each method defines the query options - service and method name.
+The first argument in each method defines the query options - `service` and `method` name.
 
 ```ts
 interface GrpcRequestOptions {
@@ -76,7 +76,7 @@ interface GrpcRequestOptions {
 ```
 
 ### Response Convention
-When you define `Response` type in methods it will be wrapped with `GrpcResponse` type.
+`Response` type in methods are wrapped with `GrpcResponse` type.
 
 ```ts
 interface GrpcErrorResponseValue {
@@ -110,7 +110,7 @@ const response = await client.invokeUnaryRequest(
 );
 ```
 
-> **Note**
+> **Note**  
 > If error occured this method will not through error. You can handle this by checking status code in response.
 
 ```ts
