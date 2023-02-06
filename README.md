@@ -75,7 +75,57 @@ interface GrpcRequestOptions {
 }
 ```
 
+### Response Convention
+When you define `Response` type in methods it will be wrapped with `GrpcResponse` type.
+
+```ts
+interface GrpcErrorResponseValue {
+  details?: string;
+  metadata?: Record<string, unknown>;
+}
+
+type GrpcResponseValue = Record<string, unknown>;
+
+interface GrpcResponse<Response extends GrpcResponseValue = GrpcResponseValue> {
+  /**
+   * Status code of gRPC request
+   */
+  code: GrpcStatus;
+
+  /**
+   * For unary requests - query execution time in milliseconds.
+   * For streaming requests - receiving response actual time in utc.
+   */
+  timestamp: number;
+
+  data: Response | GrpcErrorResponseValue;
+}
+```
+
 ### Unary Request
+```ts
+const response = await client.invokeUnaryRequest(
+  { service: 'simple_package.v1.SimpleService', method: 'SimpleUnaryRequest' },
+  { id: '21443e83-d6ab-45b7-9afd-65b2e0ee8957' }
+);
+```
+
+> **Note**
+> If error occured this method will not through error. You can handle this by checking status code in response.
+
+```ts
+import { GrpcStatus } from '@getezy/grpc-client';
+
+const response = await client.invokeUnaryRequest(
+  { service: 'simple_package.v1.SimpleService', method: 'SimpleUnaryRequest' },
+  { id: '21443e83-d6ab-45b7-9afd-65b2e0ee8957' }
+);
+
+if (response.code !== GrpcStatus.OK) {
+  // do something
+}
+```
+
 
 ### Client-Streaming Request
 ```ts
@@ -89,7 +139,11 @@ stream.on('response', (response) => {});
 stream.on('error', (error) => {});
 
 stream.write({ id: '21443e83-d6ab-45b7-9afd-65b2e0ee8957' });
+
 stream.end();
+
+// If you want to cancel stream from the client do
+stream.cancel()
 ```
 
 `ClientStream` extended from `EventEmitter`.
@@ -162,6 +216,9 @@ stream.on('end-server-stream', () => {})
 stream.write({ id: '21443e83-d6ab-45b7-9afd-65b2e0ee8957' });
 
 stream.end();
+
+// If you want to cancel stream from the client do
+stream.cancel()
 ```
 
 `BidirectionalStream` extended from `EventEmitter`.
