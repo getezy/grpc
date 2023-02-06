@@ -243,7 +243,9 @@ End the client stream.
 ## TLS
 Read [this article](https://itnext.io/how-to-setup-and-test-tls-in-grpc-grpc-web-1b67cc4413e6) to understand how TLS works in gRPC and gRPC-Web.
 
-Each protocol accepts TLS options, if TLS options are not specified Insecure connection will be used by default.
+> **Note**  
+> Each protocol accepts TLS options.
+> If TLS options are not specified `Insecure` connection will be used by default.
 
 ### Insecure
 ```ts
@@ -267,13 +269,13 @@ const protocol = new GrpcProtocol({
   tls: {
     tls: {
       type: GrpcTlsType.SERVER_SIDE,
-      rootCertificatePath: path.join(__dirname, '../certs/ca-cert.pem')
+      rootCertificatePath: path.join(__dirname, '../certs/ca-cert.pem'),
     },
   },
 });
 ```
 
-> **Note**
+> **Note**  
 > rootCertificatePath - is optional, usually used if your server has self-signed CA
 
 ### Mutual TLS
@@ -283,13 +285,13 @@ const protocol = new GrpcProtocol({
   tls: {
     type: GrpcTlsType.MUTUAL,
     rootCertificatePath: path.join(__dirname, '../certs/ca-cert.pem'),
-    clientCertificatePath: path.join(__dirname, '../certs/client-cert.pem');
-    clientKeyPath: path.join(__dirname, '../certs/client-key.pem');
+    clientCertificatePath: path.join(__dirname, '../certs/client-cert.pem'),
+    clientKeyPath: path.join(__dirname, '../certs/client-key.pem'),
   },
 });
 ```
 
-> **Note**
+> **Note**  
 > rootCertificatePath - is optional, usually used if your server has self-signed CA
 
 ## Loaders
