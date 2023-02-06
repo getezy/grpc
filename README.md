@@ -37,6 +37,38 @@ const response = await client.invokeUnaryRequest<Request, Response>(
 );
 ```
 
+## GrpcClient API
+
+```ts
+invokeUnaryRequest<Request, Response>(
+  options: GrpcRequestOptions,
+  request: Request,
+  metadata?: Record<string, MetadataValue>
+): Promise<GrpcResponse<Response>>
+```
+
+```ts
+invokeClientStreamingRequest<Request, Response>(
+  options: GrpcRequestOptions,
+  metadata?: Record<string, MetadataValue>
+): ClientStream<Request, Response>
+```
+
+```ts
+invokeServerStreamingRequest<Request, Response>(
+  options: GrpcRequestOptions,
+  payload: Request,
+  metadata?: Record<string, MetadataValue>
+): ServerStream<Response>
+```
+
+```ts
+invokeBidirectionalStreamingRequest<Request, Response>(
+  options: GrpcRequestOptions,
+  metadata?: Record<string, MetadataValue>
+): BidirectionalStream<Request, Response>
+```
+
 ## Loaders
 `Loader` - is the strategy defines how to load gRPC package definitions.
 
@@ -102,10 +134,10 @@ class CustomLoader extends AbstractLoader {
 Uses [@grpc/grpc-js](https://www.npmjs.com/package/@grpc/grpc-js).
 
 ### GrpcWebProtocol
+Uses [@improbable-eng/grpc-web](https://www.npmjs.com/package/@improbable-eng/grpc-web).
+
 > **Note**  
 > Official gRPC-Web implementation has problems with server-streaming responses. Read more [here](https://github.com/grpc/grpc-web/issues/1277).
-
-Uses [@improbable-eng/grpc-web](https://www.npmjs.com/package/@improbable-eng/grpc-web).
 
 > **Warning**  
 > gRPC-Web protocol supports only **unary** and **server streaming** requests, follow the streaming roadmap [here](https://github.com/grpc/grpc-web/blob/master/doc/streaming-roadmap.md#client-streaming-and-half-duplex-streaming).
