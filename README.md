@@ -38,7 +38,6 @@ const response = await client.invokeUnaryRequest<Request, Response>(
 ```
 
 ## GrpcClient API
-
 `GrpcClient` has public methods to query gRPC server:
 
 ```ts
@@ -79,41 +78,113 @@ interface GrpcRequestOptions {
 ### Unary Request
 
 ### Client-Streaming Request
-
 ```ts
-  const stream = client.invokeClientStreamingRequest({
-    service: 'simple_package.v1.SimpleService',
-    method: 'SimpleClientStreamRequest',
-  });
+const stream = client.invokeClientStreamingRequest({
+  service: 'simple_package.v1.SimpleService',
+  method: 'SimpleClientStreamRequest',
+});
 
-  stream.on('response', (response) => {});
+stream.on('response', (response) => {});
 
-  stream.write({ id: '21443e83-d6ab-45b7-9afd-65b2e0ee8957' });
-  stream.end();
+stream.on('error', (error) => {});
+
+stream.write({ id: '21443e83-d6ab-45b7-9afd-65b2e0ee8957' });
+stream.end();
 ```
 
 `ClientStream` extended from `EventEmitter`.
 
 #### Events:
+`stream.on('response', (response: GrpcResponse<Response>) => {})`  
+Sibscribe on server response.
 
-`stream.on('response', (response: GrpcResponse<Response>) => {})`
-`stream.on('error', (response: GrpcResponse<Response>) => {})`
+`stream.on('error', (error: GrpcResponse<Response>) => {})`  
+Subscribe on server error.
 
 #### Methods:
+`stream.write(payload: Request)`  
+Send payload to the stream.
 
-`stream.write(payload: Request)`
-Send data to the stream.
+`stream.cancel()`  
+Cancel the stream.
 
-`stream.cancel()`
-Cancels the stream.
-
-`stream.end()`
-Ends the client stream.
+`stream.end()`  
+End the stream.
 
 
 ### Server-Streaming Request
+```ts
+const stream = client.invokeServerStreamingRequest(
+  {
+    service: 'simple_package.v1.SimpleService',
+    method: 'SimpleServerStreamRequest',
+  },
+  { id: '21443e83-d6ab-45b7-9afd-65b2e0ee8957' },
+);
+
+stream.on('response', (response) => {});
+
+stream.on('error', (error) => {});
+
+stream.on('end', () => {});
+
+// If you want to cancel stream from the client do
+stream.cancel()
+```
+
+`ServerStream` extended from `EventEmitter`.
+
+#### Events:
+`stream.on('response', (response: GrpcResponse<Response>) => {})`  
+Sibscribe on server response.
+
+`stream.on('error', (error: GrpcResponse<Response>) => {})`  
+Subscribe on server error.
+
+#### Methods:
+`stream.cancel()`  
+Cancel the stream.
+
 
 ### Bidirectional-Streaming Request
+```ts
+const stream = client.invokeBidirectionalStreamingRequest({
+  service: 'simple_package.v1.SimpleService',
+  method: 'SimpleBidirectionalStreamRequest',
+});
+
+stream.on('response', (response) => {});
+
+stream.on('error', (error) => {});
+
+stream.on('end-server-stream', () => {})
+
+stream.write({ id: '21443e83-d6ab-45b7-9afd-65b2e0ee8957' });
+
+stream.end();
+```
+
+`BidirectionalStream` extended from `EventEmitter`.
+
+#### Events:
+`stream.on('response', (response: GrpcResponse<Response>) => {})`  
+Sibscribe on server response.
+
+`stream.on('error', (error: GrpcResponse<Response>) => {})`  
+Subscribe on server error.
+
+`stream.on('end-server-stream', () => {})`  
+Subscribe on end server stream.
+
+#### Methods:
+`stream.write(payload: Request)`  
+Send payload to the stream.
+
+`stream.cancel()`  
+Cancel the stream.
+
+`stream.end()`  
+End the client stream.
 
 ## TLS
 
