@@ -39,35 +39,58 @@ const response = await client.invokeUnaryRequest<Request, Response>(
 
 ## GrpcClient API
 
-```ts
-invokeUnaryRequest<Request, Response>(
-  options: GrpcRequestOptions,
-  request: Request,
-  metadata?: Record<string, MetadataValue>
-): Promise<GrpcResponse<Response>>
-```
+`GrpcClient` has public methods to query gRPC server:
 
 ```ts
-invokeClientStreamingRequest<Request, Response>(
-  options: GrpcRequestOptions,
-  metadata?: Record<string, MetadataValue>
-): ClientStream<Request, Response>
+class GrpcClient<MetadataValue, Metadata> {
+  public invokeUnaryRequest<Request, Response>(
+    options: GrpcRequestOptions,
+    request: Request,
+    metadata?: Record<string, MetadataValue>
+  ): Promise<GrpcResponse<Response>>;
+
+  public invokeClientStreamingRequest<Request, Response>(
+    options: GrpcRequestOptions,
+    metadata?: Record<string, MetadataValue>
+  ): ClientStream<Request, Response>;
+
+  public invokeServerStreamingRequest<Request, Response>(
+    options: GrpcRequestOptions,
+    payload: Request,
+    metadata?: Record<string, MetadataValue>
+  ): ServerStream<Response>;
+
+  public invokeBidirectionalStreamingRequest<Request, Response>(
+    options: GrpcRequestOptions,
+    metadata?: Record<string, MetadataValue>
+  ): BidirectionalStream<Request, Response>;
+}
 ```
 
-```ts
-invokeServerStreamingRequest<Request, Response>(
-  options: GrpcRequestOptions,
-  payload: Request,
-  metadata?: Record<string, MetadataValue>
-): ServerStream<Response>
-```
+The first argument in each method defines the query options - service and method name.
 
 ```ts
-invokeBidirectionalStreamingRequest<Request, Response>(
-  options: GrpcRequestOptions,
-  metadata?: Record<string, MetadataValue>
-): BidirectionalStream<Request, Response>
+interface GrpcRequestOptions {
+  service: string;
+  method: string;
+}
 ```
+
+### Unary Request
+
+### Client Streaming Request
+
+### Server Streaming Request
+
+### Bidirectional Streaming Request
+
+## TLS
+
+### Insecure
+
+### Server-Side TLS
+
+### Mutual TLS
 
 ## Loaders
 `Loader` - is the strategy defines how to load gRPC package definitions.
@@ -87,6 +110,8 @@ const loader = new ProtobufLoader(
     defaults: false,
   }
 );
+
+await loader.load();
 ```
 
 Refer to `@grpc/proto-loader` [documentation](https://github.com/grpc/grpc-node/tree/master/packages/proto-loader#usage) to see available options.
@@ -128,10 +153,22 @@ class CustomLoader extends AbstractLoader {
 ```
 
 ## Protocols
-`Protocol` - is the strategy defines how to make queries to the gRPC server.
+`Protocol` - is the strategy defines how to make queries to gRPC server.
 
 ### GrpcProtocol
 Uses [@grpc/grpc-js](https://www.npmjs.com/package/@grpc/grpc-js).
+
+`new GrpcProtocol(options: GrpcProtocolOptions)`
+
+```ts
+import { GrpcProtocol, GrpcTlsType } from '@getezy/grpc-client';
+
+const protocol = new GrpcProtocol({
+  address: '10.10.10.10',
+  tls: { type: GrpcTlsType.INSECURE },
+  channelOptions: { sslTargetNameOverride: 'test' },
+});
+```
 
 ### GrpcWebProtocol
 Uses [@improbable-eng/grpc-web](https://www.npmjs.com/package/@improbable-eng/grpc-web).
@@ -141,6 +178,28 @@ Uses [@improbable-eng/grpc-web](https://www.npmjs.com/package/@improbable-eng/gr
 
 > **Warning**  
 > gRPC-Web protocol supports only **unary** and **server streaming** requests, follow the streaming roadmap [here](https://github.com/grpc/grpc-web/blob/master/doc/streaming-roadmap.md#client-streaming-and-half-duplex-streaming).
+
+`new GrpcWebProtocol(options: AbstractProtocolOptions)`
+
+```ts
+import { GrpcWebProtocol, GrpcTlsType } from '@getezy/grpc-client';
+
+const protocol = new GrpcWebProtocol({
+  address: '10.10.10.10',
+  tls: { type: GrpcTlsType.INSECURE },
+});
+```
+
+#### Custom protocol
+You can write custom protocol implementation by extending `AbstractProtocol` class imported from `@getezy/grpc-client`.
+
+```ts
+import { AbstractProtocol } from '@getezy/grpc-client';
+
+class CustomProtocol extends AbstractProtocol<MetadataValue, Metadata> {
+  // custom protocol implementation
+}
+```
 
 ## License
 Mozilla Public License Version 2.0
