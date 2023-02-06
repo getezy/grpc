@@ -241,7 +241,12 @@ Cancel the stream.
 End the client stream.
 
 ## TLS
-Read [this article](https://itnext.io/how-to-setup-and-test-tls-in-grpc-grpc-web-1b67cc4413e6) to understand how TLS works in gRPC and gRPC-Web.
+Read [this article](https://itnext.io/how-to-setup-and-test-tls-in-grpc-grpc-web-1b67cc4413e6) to understand how to configure TLS for gRPC and gRPC-Web server.
+
+There are three connection types:
+* **Insecure** — all data transmitted without encryption.
+* **Server-Side** TLS — browser like encryption, where only the server provides TLS certificate to the client.
+* **Mutual** TLS — most secure, both the server and the client provides their certificates to each other.
 
 > **Note**  
 > Each protocol accepts TLS options.
