@@ -8,7 +8,6 @@ import { SetOptional } from 'type-fest';
 
 import {
   AbstractProtocol,
-  AbstractProtocolOptions,
   BidirectionalStream,
   ClientStream,
   GrpcRequestOptions,
@@ -25,10 +24,14 @@ import {
 import { GrpcWebError } from './grpc-web.error';
 import { GrpcWebCallStream } from './grpc-web-call.stream';
 import { GrpcWebMetadataParser } from './grpc-web-metadata.parser';
-import { GrpcWebMetadataValue, instanceOfProtobufMethodDefinition } from './interfaces';
+import {
+  GrpcWebMetadataValue,
+  GrpcWebProtocolOptions,
+  instanceOfProtobufMethodDefinition,
+} from './interfaces';
 
 export class GrpcWebProtocol extends AbstractProtocol<GrpcWebMetadataValue, grpc.Metadata> {
-  constructor(options: SetOptional<AbstractProtocolOptions, 'tls'>) {
+  constructor(options: SetOptional<GrpcWebProtocolOptions, 'tls'>) {
     super(options, new GrpcWebMetadataParser());
   }
 
