@@ -6,8 +6,9 @@ import type {
 } from '@grpc/proto-loader';
 import * as ProtoLoader from '@grpc/proto-loader';
 
-import { AbstractLoader } from './abstract.loader';
-import { GrpcMethodDefinition, GrpcMethodType, GrpcServiceDefinition } from './interfaces';
+import { AbstractLoader } from '../abstract.loader';
+import { GrpcMethodDefinition, GrpcMethodType, GrpcServiceDefinition } from '../interfaces';
+import { ProtobufLoaderOptions } from './interfaces';
 
 function instanceOfProtobufTypeDefinition(object: any): object is ProtobufTypeDefinition {
   return 'type' in object;
@@ -21,17 +22,21 @@ function instanceOfMethodDefinition(object: any): object is MethodDefinition<obj
  * ProtobufLoader used for load package definition from file.
  */
 export class ProtobufLoader extends AbstractLoader {
-  constructor(public readonly path: string, public readonly options?: ProtoLoader.Options) {
-    super();
+  private readonly protoLoaderOptions?: ProtobufLoaderOptions;
+
+  constructor(source: string, options?: ProtobufLoaderOptions) {
+    super(source);
+
+    this.protoLoaderOptions = options;
   }
 
   public async load(): Promise<void> {
-    this.packageDefinition = await ProtoLoader.load(this.path, {
+    this.packageDefinition = await ProtoLoader.load(this.source, {
       keepCase: true,
       defaults: true,
       includeDirs: [],
       longs: String,
-      ...this.options,
+      ...this.protoLoaderOptions,
     });
 
     this.services = this.parse(this.packageDefinition);

@@ -10,6 +10,8 @@ export abstract class AbstractLoader {
 
   protected packageDefinition?: PackageDefinition;
 
+  constructor(protected readonly source: string) {}
+
   /**
    * Returns grpc service definitions
    */

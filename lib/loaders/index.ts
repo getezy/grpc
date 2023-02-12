@@ -1,3 +1,3 @@
-export * from './protobuf.loader';
+export * from './protobuf';
 export * from './abstract.loader';
 export * from './interfaces';
