@@ -1,5 +1,7 @@
 
 
+## [1.0.3](https://github.com/getezy/grpc-client/compare/1.0.2...1.0.3) (2023-02-12)
+
 ## [1.0.2](https://github.com/getezy/grpc-client/compare/1.0.1...1.0.2) (2023-02-09)
 
 
