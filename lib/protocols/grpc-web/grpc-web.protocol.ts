@@ -15,6 +15,10 @@ import {
   GrpcResponse,
   GrpcResponseValue,
   GrpcStatus,
+  GrpcWebMetadata,
+  GrpcWebMetadataValue,
+  GrpcWebProtocolOptions,
+  instanceOfProtobufMethodDefinition,
   isInsecureTlsConfig,
   isMutualTlsConfig,
   isServerSideTlsConfig,
@@ -24,13 +28,8 @@ import {
 import { GrpcWebError } from './grpc-web.error';
 import { GrpcWebCallStream } from './grpc-web-call.stream';
 import { GrpcWebMetadataParser } from './grpc-web-metadata.parser';
-import {
-  GrpcWebMetadataValue,
-  GrpcWebProtocolOptions,
-  instanceOfProtobufMethodDefinition,
-} from './interfaces';
 
-export class GrpcWebProtocol extends AbstractProtocol<GrpcWebMetadataValue, grpc.Metadata> {
+export class GrpcWebProtocol extends AbstractProtocol<GrpcWebMetadataValue, GrpcWebMetadata> {
   constructor(options: SetOptional<GrpcWebProtocolOptions, 'tls'>) {
     super(options, new GrpcWebMetadataParser());
   }

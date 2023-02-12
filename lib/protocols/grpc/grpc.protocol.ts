@@ -4,7 +4,6 @@ import type {
   ClientDuplexStream,
   ClientReadableStream,
   ClientWritableStream,
-  MetadataValue,
   ServerErrorResponse,
 } from '@grpc/grpc-js';
 import * as grpc from '@grpc/grpc-js';
@@ -18,6 +17,8 @@ import {
   BidirectionalStream,
   ClientStream,
   GrpcChannelOptions,
+  GrpcMetadata,
+  GrpcMetadataValue,
   GrpcProtocolOptions,
   GrpcRequestOptions,
   GrpcRequestValue,
@@ -32,7 +33,7 @@ import {
 
 import { GrpcMetadataParser } from './grpc-metadata.parser';
 
-export class GrpcProtocol extends AbstractProtocol<MetadataValue, grpc.Metadata> {
+export class GrpcProtocol extends AbstractProtocol<GrpcMetadataValue, GrpcMetadata> {
   private readonly channelOptions?: GrpcChannelOptions;
 
   constructor({ channelOptions, ...options }: SetOptional<GrpcProtocolOptions, 'tls'>) {
@@ -48,7 +49,7 @@ export class GrpcProtocol extends AbstractProtocol<MetadataValue, grpc.Metadata>
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
     payload: Request,
-    metadata?: Record<string, MetadataValue>
+    metadata?: Record<string, GrpcMetadataValue>
   ): Promise<GrpcResponse<Response>> {
     const client = this.createClient(packageDefinition, requestOptions);
 
@@ -84,7 +85,7 @@ export class GrpcProtocol extends AbstractProtocol<MetadataValue, grpc.Metadata>
   >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
-    metadata?: Record<string, MetadataValue>
+    metadata?: Record<string, GrpcMetadataValue>
   ): ClientStream<Request, Response> {
     const client = this.createClient(packageDefinition, requestOptions);
 
@@ -141,7 +142,7 @@ export class GrpcProtocol extends AbstractProtocol<MetadataValue, grpc.Metadata>
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
     payload: Request,
-    metadata?: Record<string, MetadataValue>
+    metadata?: Record<string, GrpcMetadataValue>
   ): ServerStream<Response> {
     const client = this.createClient(packageDefinition, requestOptions);
 
@@ -195,7 +196,7 @@ export class GrpcProtocol extends AbstractProtocol<MetadataValue, grpc.Metadata>
   >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
-    metadata?: Record<string, MetadataValue>
+    metadata?: Record<string, GrpcMetadataValue>
   ): BidirectionalStream<Request, Response> {
     const client = this.createClient(packageDefinition, requestOptions);
 
