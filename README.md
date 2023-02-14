@@ -1,9 +1,13 @@
 🛵 Universal, extendable, typesafe gRPC/gRPC-Web client for node used in [ezy](https://github.com/getezy/ezy).
 
-![npm](https://img.shields.io/npm/v/@getezy/grpc-client)
-![npm](https://img.shields.io/npm/dt/@getezy/grpc-client)
+[![npm](https://img.shields.io/npm/v/@getezy/grpc-client)](https://www.npmjs.com/package/@getezy/grpc-client)
+[![npm](https://img.shields.io/npm/dt/@getezy/grpc-client)](https://www.npmjs.com/package/@getezy/grpc-client)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/731941e4ddcb4fc7aa675d51dfb55f51)](https://www.codacy.com/gh/getezy/grpc-client/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=getezy/grpc-client&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/731941e4ddcb4fc7aa675d51dfb55f51)](https://www.codacy.com/gh/getezy/grpc-client/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=getezy/grpc-client&amp;utm_campaign=Badge_Coverage)
+
+![esm](https://img.shields.io/badge/-ESM-efe253?style=flat)
+![cjs](https://img.shields.io/badge/-CJS-efe253?style=flat)
+
 
 > **Warning**  
 > This lib is not production ready until it is merged to main ezy project.
