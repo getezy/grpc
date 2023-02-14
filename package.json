@@ -4,6 +4,12 @@
   "description": "Universal, extendable, typesafe gRPC/gRPC-Web client for node used in ezy.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
   "files": [
     "dist/**"
   ],
@@ -23,7 +29,7 @@
   "scripts": {
     "prepare": "husky install",
     "prepublishOnly": "npm run lint && npm run test && npm run build",
-    "build": "rimraf dist && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "build": "tsup lib/index.ts --tsconfig tsconfig.build.json --format cjs,esm --dts --sourcemap --clean",
     "release": "release-it",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts",
     "lint:fix": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
@@ -51,10 +57,9 @@
     "nock": "13.3.0",
     "prettier": "2.8.4",
     "release-it": "15.6.0",
-    "rimraf": "4.1.2",
     "ts-jest": "29.0.5",
     "ts-proto": "1.139.0",
-    "tsc-alias": "1.8.2",
+    "tsup": "^6.6.3",
     "typescript": "4.9.5",
     "uuid": "9.0.0"
   },
