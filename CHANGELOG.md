@@ -1,5 +1,12 @@
 
 
+## [1.0.7](https://github.com/getezy/grpc-client/compare/1.0.6...1.0.7) (2023-02-14)
+
+
+### Features
+
+* build library for cjs and esm ([10676cf](https://github.com/getezy/grpc-client/commit/10676cf6563b0d0049ae120f0e70f135d572a9af))
+
 ## [1.0.6](https://github.com/getezy/grpc-client/compare/1.0.5...1.0.6) (2023-02-12)
 
 ## [1.0.5](https://github.com/getezy/grpc-client/compare/1.0.4...1.0.5) (2023-02-12)
