@@ -5,8 +5,8 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/731941e4ddcb4fc7aa675d51dfb55f51)](https://www.codacy.com/gh/getezy/grpc-client/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=getezy/grpc-client&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/731941e4ddcb4fc7aa675d51dfb55f51)](https://www.codacy.com/gh/getezy/grpc-client/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=getezy/grpc-client&amp;utm_campaign=Badge_Coverage)
 
-![esm](https://img.shields.io/badge/-ESM-efe253?style=flat)
-![cjs](https://img.shields.io/badge/-CJS-efe253?style=flat)
+![esm](https://img.shields.io/badge/-ESM-fff054?style=flat)
+![cjs](https://img.shields.io/badge/-CJS-fff054?style=flat)
 
 
 > **Warning**  
