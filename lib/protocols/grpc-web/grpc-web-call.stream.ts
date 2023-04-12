@@ -1,6 +1,6 @@
 import { grpc } from '@improbable-eng/grpc-web';
-import { EventEmitter } from 'events';
-import * as https from 'https';
+import { EventEmitter } from 'node:events';
+import * as https from 'node:https';
 
 import { GrpcWebError } from './grpc-web.error';
 import { NodeHttpTransport } from './http.transport';

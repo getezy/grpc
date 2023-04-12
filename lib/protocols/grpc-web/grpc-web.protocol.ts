@@ -1,9 +1,9 @@
 import type { PackageDefinition, ServiceDefinition } from '@grpc/proto-loader';
 import { grpc } from '@improbable-eng/grpc-web';
-import * as fs from 'fs';
-import * as https from 'https';
 import lodashGet from 'lodash.get';
-import { performance } from 'perf_hooks';
+import * as fs from 'node:fs';
+import * as https from 'node:https';
+import { performance } from 'node:perf_hooks';
 import { SetOptional } from 'type-fest';
 
 import {
