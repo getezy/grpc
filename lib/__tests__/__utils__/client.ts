@@ -40,9 +40,8 @@ function createProtocol(protocolType: ProtocolType) {
   }
 }
 
-type AbstractProtocolMetadataValue<T> = T extends AbstractProtocol<infer MetadataValue, any>
-  ? MetadataValue
-  : T;
+type AbstractProtocolMetadataValue<T> =
+  T extends AbstractProtocol<infer MetadataValue, any> ? MetadataValue : T;
 type AbstractProtocolMetadata<T> = T extends AbstractProtocol<any, infer Metadata> ? Metadata : T;
 
 export async function createGrpcClient(loaderType: LoaderType, protocolType: ProtocolType) {

@@ -12,7 +12,7 @@ interface ServerStreamEvents<Response extends GrpcResponseValue> {
 }
 
 export class ServerStream<
-  Response extends GrpcResponseValue = GrpcResponseValue
+  Response extends GrpcResponseValue = GrpcResponseValue,
 > extends TypedEmitter<ServerStreamEvents<Response>> {
   /**
    * Cancel the stream.

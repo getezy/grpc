@@ -22,7 +22,7 @@ export class GrpcClient<MetadataValue, Metadata> {
 
   public invokeUnaryRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(
     options: GrpcRequestOptions,
     request: Request,
@@ -35,7 +35,7 @@ export class GrpcClient<MetadataValue, Metadata> {
 
   public invokeClientStreamingRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(
     options: GrpcRequestOptions,
     metadata?: Record<string, MetadataValue>
@@ -47,7 +47,7 @@ export class GrpcClient<MetadataValue, Metadata> {
 
   public invokeServerStreamingRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(
     options: GrpcRequestOptions,
     payload: Request,
@@ -65,7 +65,7 @@ export class GrpcClient<MetadataValue, Metadata> {
 
   public invokeBidirectionalStreamingRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(
     options: GrpcRequestOptions,
     metadata?: Record<string, MetadataValue>

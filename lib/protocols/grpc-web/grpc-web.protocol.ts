@@ -36,7 +36,7 @@ export class GrpcWebProtocol extends AbstractProtocol<GrpcWebMetadataValue, Grpc
 
   public invokeUnaryRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
@@ -82,7 +82,7 @@ export class GrpcWebProtocol extends AbstractProtocol<GrpcWebMetadataValue, Grpc
 
   public invokeServerStreamingRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
@@ -146,21 +146,21 @@ export class GrpcWebProtocol extends AbstractProtocol<GrpcWebMetadataValue, Grpc
 
   public invokeClientStreamingRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(): ClientStream<Request, Response> {
     throw new Error(`gRPC-Web doesn't support client streaming requests.`);
   }
 
   public invokeBidirectionalStreamingRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(): BidirectionalStream<Request, Response> {
     throw new Error(`gRPC-Web doesn't support bidirectional streaming requests.`);
   }
 
   private loadMethodDefinition<
     RequestType extends grpc.ProtobufMessage,
-    ResponseType extends grpc.ProtobufMessage
+    ResponseType extends grpc.ProtobufMessage,
   >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions

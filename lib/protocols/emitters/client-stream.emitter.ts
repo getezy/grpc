@@ -14,7 +14,7 @@ interface ClientStreamEvents<Request extends GrpcRequestValue, Response extends 
 
 export class ClientStream<
   Request extends GrpcRequestValue = GrpcRequestValue,
-  Response extends GrpcResponseValue = GrpcResponseValue
+  Response extends GrpcResponseValue = GrpcResponseValue,
 > extends TypedEmitter<ClientStreamEvents<Request, Response>> {
   /**
    * Send payload to the stream.

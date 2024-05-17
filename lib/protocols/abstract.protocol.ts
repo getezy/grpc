@@ -32,7 +32,7 @@ export abstract class AbstractProtocol<MetadataValue, Metadata> {
 
   public abstract invokeUnaryRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
@@ -42,7 +42,7 @@ export abstract class AbstractProtocol<MetadataValue, Metadata> {
 
   public abstract invokeClientStreamingRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
@@ -51,7 +51,7 @@ export abstract class AbstractProtocol<MetadataValue, Metadata> {
 
   public abstract invokeServerStreamingRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
@@ -61,7 +61,7 @@ export abstract class AbstractProtocol<MetadataValue, Metadata> {
 
   public abstract invokeBidirectionalStreamingRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,

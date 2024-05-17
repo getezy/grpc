@@ -6,7 +6,7 @@ import { GrpcRequestValue, GrpcResponse, GrpcResponseValue } from '@protocols';
 
 interface BidirectionalStreamEvents<
   Request extends GrpcRequestValue,
-  Response extends GrpcResponseValue
+  Response extends GrpcResponseValue,
 > {
   write: (payload: Request) => void;
   'end-client-stream': () => void;
@@ -18,7 +18,7 @@ interface BidirectionalStreamEvents<
 
 export class BidirectionalStream<
   Request extends GrpcRequestValue = GrpcRequestValue,
-  Response extends GrpcResponseValue = GrpcResponseValue
+  Response extends GrpcResponseValue = GrpcResponseValue,
 > extends TypedEmitter<BidirectionalStreamEvents<Request, Response>> {
   /**
    * Send payload to the stream.

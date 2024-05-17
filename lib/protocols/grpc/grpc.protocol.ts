@@ -44,7 +44,7 @@ export class GrpcProtocol extends AbstractProtocol<GrpcMetadataValue, GrpcMetada
 
   public invokeUnaryRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
@@ -81,7 +81,7 @@ export class GrpcProtocol extends AbstractProtocol<GrpcMetadataValue, GrpcMetada
 
   public invokeClientStreamingRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
@@ -120,7 +120,7 @@ export class GrpcProtocol extends AbstractProtocol<GrpcMetadataValue, GrpcMetada
 
   private subsribeOnClientStreamingEvents<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(emitter: ClientStream<Request, Response>, call: ClientWritableStream<Request>) {
     emitter.on('write', (payload) => {
       call.write(payload);
@@ -137,7 +137,7 @@ export class GrpcProtocol extends AbstractProtocol<GrpcMetadataValue, GrpcMetada
 
   public invokeServerStreamingRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
@@ -192,7 +192,7 @@ export class GrpcProtocol extends AbstractProtocol<GrpcMetadataValue, GrpcMetada
 
   public invokeBidirectionalStreamingRequest<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(
     packageDefinition: PackageDefinition,
     requestOptions: GrpcRequestOptions,
@@ -213,7 +213,7 @@ export class GrpcProtocol extends AbstractProtocol<GrpcMetadataValue, GrpcMetada
 
   private subsribeOnBidirectionalStreamingEvents<
     Request extends GrpcRequestValue = GrpcRequestValue,
-    Response extends GrpcResponseValue = GrpcResponseValue
+    Response extends GrpcResponseValue = GrpcResponseValue,
   >(emitter: BidirectionalStream<Request, Response>, call: ClientDuplexStream<Request, Response>) {
     emitter.on('write', (payload) => {
       call.write(payload);

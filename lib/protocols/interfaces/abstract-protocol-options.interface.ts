@@ -23,8 +23,8 @@ export interface GrpcInsecureTlsConfig {
 export type GrpcTlsConfig<T extends GrpcTlsType> = T extends GrpcTlsType.MUTUAL
   ? GrpcMutualTlsConfig
   : T extends GrpcTlsType.SERVER_SIDE
-  ? GrpcServerSideTlsConfig
-  : GrpcInsecureTlsConfig;
+    ? GrpcServerSideTlsConfig
+    : GrpcInsecureTlsConfig;
 
 export interface AbstractProtocolOptions {
   address: string;
