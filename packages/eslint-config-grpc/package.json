@@ -1,0 +1,25 @@
+{
+  "name": "@getezy/eslint-config-grpc",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.js",
+  "version": "2.0.0",
+  "author": "Alexey Vasyukov (@notmedia)",
+  "license": "MPL-2.0",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "dependencies": {
+    "@eslint/js": "9.4.0",
+    "eslint-config-prettier": "9.1.0",
+    "globals": "15.4.0"
+  },
+  "peerDependencies": {
+    "eslint": "9.4.0",
+    "eslint-plugin-prettier": "5.1.3",
+    "eslint-plugin-simple-import-sort": "12.1.0",
+    "prettier": "3.3.1",
+    "typescript-eslint": "8.0.0-alpha.28"
+  }
+}

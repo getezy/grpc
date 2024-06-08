@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "dist",
+    "module": "CommonJS",
+    "target": "esnext",
+    "moduleResolution": "node",
+
+    "declaration": true,
+    "sourceMap": true,
+    "jsx": "preserve",
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+
+    "esModuleInterop": true,
+
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+  },
+  "include": [
+    "src/**/*",
+  ],
+}
