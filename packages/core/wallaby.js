@@ -1,9 +1,9 @@
 module.exports = () => ({
   autoDetect: true,
 
-  files: ['lib/**/*.ts', '!lib/**/*.spec.ts'],
+  files: ['src/**/*.ts', '!src/**/*.spec.ts'],
 
-  tests: ['lib/**/*.spec.ts'],
+  tests: ['src/**/*.spec.ts'],
 
   env: {
     type: 'node',
