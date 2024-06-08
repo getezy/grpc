@@ -1,6 +1,6 @@
 {
   "name": "@getezy/grpc",
-  "version": "1.0.11",
+  "version": "2.0.0",
   "description": "Universal, extendable, typesafe gRPC/gRPC-Web client for node used in ezy.",
   "author": "Alexey Vasyukov (@notmedia)",
   "license": "MPL-2.0",
@@ -12,14 +12,18 @@
     "type": "git",
     "url": "git+https://github.com/getezy/grpc-client.git"
   },
+  "workspaces": [
+    "packages/*"
+  ],
+  "packageManager": "npm@10.7.0",
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky",
+    "build": "turbo run build"
   },
   "devDependencies": {
     "@commitlint/cli": "19.3.0",
     "@commitlint/config-conventional": "19.2.2",
-    "husky": "9.0.11"
-  },
-  "dependencies": {
+    "husky": "9.0.11",
+    "turbo": "2.0.3"
   }
 }
