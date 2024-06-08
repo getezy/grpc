@@ -1,5 +1,8 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
+    "lint": {
+      "inputs": ["src/**/*.js", "src/**/*.ts", "src/**/*.tsx"]
+    }
   }
 }
