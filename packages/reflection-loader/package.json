@@ -1,5 +1,5 @@
 {
-  "name": "@getezy/grpc-core",
+  "name": "@getezy/grpc-reflection-loader",
   "version": "2.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -22,7 +22,7 @@
   "author": "Alexey Vasyukov (@notmedia)",
   "license": "MPL-2.0",
   "dependencies": {
-    "@grpc/proto-loader": "0.7.13"
+    "grpc-js-reflection-client": "1.2.14"
   },
   "devDependencies": {
     "@getezy/eslint-config-grpc": "*",

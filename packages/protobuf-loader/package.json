@@ -1,5 +1,5 @@
 {
-  "name": "@getezy/grpc-core",
+  "name": "@getezy/grpc-protobuf-loader",
   "version": "2.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -23,6 +23,9 @@
   "license": "MPL-2.0",
   "dependencies": {
     "@grpc/proto-loader": "0.7.13"
+  },
+  "peerDependencies": {
+    "@getezy/grpc-core": "*"
   },
   "devDependencies": {
     "@getezy/eslint-config-grpc": "*",

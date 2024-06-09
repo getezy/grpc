@@ -19,7 +19,7 @@
   "packageManager": "npm@10.7.0",
   "scripts": {
     "prepare": "husky",
-    "build": "turbo run build",
+    "build": "turbo build",
     "ncu": "ncu -ws --root"
   },
   "devDependencies": {

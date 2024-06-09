@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package simple_package.v1;
+
+message SimpleMessage {
+  string id = 1;
+}
+
+service SimpleService {
+  rpc SimpleUnaryRequest(SimpleMessage) returns (SimpleMessage);
+
+  rpc SimpleClientStreamingRequest(stream SimpleMessage)
+    returns (SimpleMessage);
+
+  rpc SimpleServerStreamingRequest(SimpleMessage)
+    returns (stream SimpleMessage);
+
+  rpc SimpleBidirectionalStreamingRequest(stream SimpleMessage)
+    returns (stream SimpleMessage);
+}

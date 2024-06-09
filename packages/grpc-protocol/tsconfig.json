@@ -24,7 +24,8 @@
     "paths": {
       "@loader": ["./src/loader/index.ts"],
       "@protocol": ["./src/protocol/index.ts"]
-    }
+    },
+    "types": ["vitest/globals"]
   },
   "include": [
     "src/**/*",
