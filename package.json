@@ -2,7 +2,7 @@
   "name": "@getezy/grpc",
   "version": "2.0.0",
   "private": true,
-  "description": "Universal, extendable, typesafe gRPC/gRPC-Web client for node used in ezy.",
+  "description": "Universal, extendable, typesafe gRPC/gRPC-Web client for Node used in ezy.",
   "author": "Alexey Vasyukov (@notmedia)",
   "license": "MPL-2.0",
   "bugs": {
@@ -19,7 +19,8 @@
   "packageManager": "npm@10.7.0",
   "scripts": {
     "prepare": "husky",
-    "build": "turbo run build"
+    "build": "turbo run build",
+    "ncu": "ncu -ws --root"
   },
   "devDependencies": {
     "@changesets/cli": "2.27.5",
