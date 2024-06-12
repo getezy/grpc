@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "dist",
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
+
+    "declaration": true,
+    "sourceMap": true,
+    "jsx": "preserve",
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+
+    "esModuleInterop": true,
+
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@loader": ["./src/loader/index.ts"],
+      "@protocol": ["./src/protocol/index.ts"]
+    },
+    "types": ["vitest/globals"]
+  },
+  "include": [
+    "src/**/*",
+  ],
+}

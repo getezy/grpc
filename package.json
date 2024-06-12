@@ -14,7 +14,8 @@
     "url": "git+https://github.com/getezy/grpc-client.git"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "tests/e2e/*"
   ],
   "packageManager": "npm@10.7.0",
   "scripts": {
