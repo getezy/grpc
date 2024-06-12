@@ -24,6 +24,9 @@
   "dependencies": {
     "grpc-js-reflection-client": "1.2.14"
   },
+  "peerDependencies": {
+    "@getezy/grpc-core": "*"
+  },
   "devDependencies": {
     "@getezy/eslint-config-grpc": "*",
     "eslint": "9.4.0",
