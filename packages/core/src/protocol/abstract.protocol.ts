@@ -1,1 +1,1 @@
-export abstract class AbstractClientProtocol {}
+export abstract class AbstractProtocol {}

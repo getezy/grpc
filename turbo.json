@@ -10,6 +10,9 @@
     },
     "test": {
       "inputs": ["src/**/*.js", "src/**/*.ts"]
+    },
+    "test:watch": {
+      "inputs": ["src/**/*.js", "src/**/*.ts"]
     }
   }
 }

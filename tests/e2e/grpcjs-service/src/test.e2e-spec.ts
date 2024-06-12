@@ -1,5 +1,8 @@
+import { inject } from 'vitest';
+
 describe('', () => {
   it('', () => {
-    expect('', '');
+    console.log(inject('SERVICE_ADDRESS'));
+    expect('1').toEqual('1');
   });
 });

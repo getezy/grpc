@@ -6,7 +6,8 @@
   "author": "Alexey Vasyukov (@notmedia)",
   "license": "MPL-2.0",
   "scripts": {
-    "e2e": "vitest run"
+    "e2e": "vitest run",
+    "e2e:watch": "vitest"
   },
   "devDependencies": {
     "eslint": "9.4.0",

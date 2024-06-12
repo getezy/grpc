@@ -2,7 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "extends": ["//"],
   "tasks": {
-    "e2e": {
-    }
+    "e2e": {},
+    "e2e:watch": {}
   }
 }
