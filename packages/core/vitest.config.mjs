@@ -5,5 +5,10 @@ export default defineProject({
     environment: 'node',
     reporters: ['default'],
     globals: true,
+    coverage: {
+      include: ['src/**'],
+      reporter: ['text', 'json', 'html'],
+    },
+    passWithNoTests: true,
   },
 });

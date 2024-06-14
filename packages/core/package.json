@@ -17,7 +17,9 @@
     "build": "tsup src/index.ts --tsconfig tsconfig.build.json --format cjs,esm --dts --sourcemap --clean",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:cov": "vitest run --coverage"
   },
   "author": "Alexey Vasyukov (@notmedia)",
   "license": "MPL-2.0",
@@ -26,7 +28,8 @@
   },
   "devDependencies": {
     "@getezy/eslint-config-grpc": "*",
-    "eslint": "9.4.0",
+    "@vitest/coverage-v8": "1.6.0",
+    "eslint": "9.5.0",
     "eslint-plugin-prettier": "5.1.3",
     "eslint-plugin-simple-import-sort": "12.1.0",
     "prettier": "3.3.2",

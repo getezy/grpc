@@ -1,3 +1,1 @@
-export class GrpcClient {
-  constructor() {}
-}
+export class GrpcClient {}

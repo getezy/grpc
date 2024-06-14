@@ -30,6 +30,6 @@
     "@commitlint/config-conventional": "19.2.2",
     "husky": "9.0.11",
     "npm-check-updates": "16.14.20",
-    "turbo": "2.0.3"
+    "turbo": "2.0.4"
   }
 }

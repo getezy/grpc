@@ -13,6 +13,11 @@
     },
     "test:watch": {
       "inputs": ["src/**/*.js", "src/**/*.ts"]
+    },
+    "test:cov": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**/*.js", "src/**/*.ts"],
+      "outputs": ["coverage/**"]
     }
   }
 }
