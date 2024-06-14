@@ -6,6 +6,6 @@ export default defineProject({
     environment: 'node',
     reporters: ['default'],
     globals: true,
-    globalSetup: ['./src/start-service.ts'],
+    globalSetup: ['./src/setup/start-service.ts'],
   },
 });

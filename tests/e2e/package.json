@@ -1,5 +1,5 @@
 {
-  "name": "grpcjs-service",
+  "name": "@getezy/grpc-e2e",
   "version": "1.0.0",
   "private": true,
   "main": "index.js",
@@ -8,6 +8,9 @@
   "scripts": {
     "e2e": "vitest run",
     "e2e:watch": "vitest"
+  },
+  "dependencies": {
+    "@getezy/grpc-core": "2.0.0"
   },
   "devDependencies": {
     "eslint": "9.4.0",

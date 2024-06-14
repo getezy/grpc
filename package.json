@@ -15,7 +15,7 @@
   },
   "workspaces": [
     "packages/*",
-    "tests/e2e/*"
+    "tests/e2e"
   ],
   "packageManager": "npm@10.7.0",
   "scripts": {
