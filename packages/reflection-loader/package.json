@@ -23,9 +23,6 @@
   },
   "author": "Alexey Vasyukov (@notmedia)",
   "license": "MPL-2.0",
-  "dependencies": {
-    "grpc-js-reflection-client": "1.2.14"
-  },
   "peerDependencies": {
     "@getezy/grpc-core": "*"
   },
