@@ -2,16 +2,16 @@
   "name": "@getezy/grpc",
   "version": "2.0.0",
   "private": true,
-  "description": "Universal, extendable, typesafe gRPC/gRPC-Web client for Node used in ezy.",
+  "description": "Universal, extendable, typesafe gRPC/gRPC-Web client/server library used in ezy.",
   "author": "Alexey Vasyukov (@notmedia)",
   "license": "MPL-2.0",
   "bugs": {
-    "url": "https://github.com/getezy/grpc-client/issues"
+    "url": "https://github.com/getezy/grpc/issues"
   },
-  "homepage": "https://github.com/getezy/grpc-client#readme",
+  "homepage": "https://github.com/getezy/grpc#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/getezy/grpc-client.git"
+    "url": "git+https://github.com/getezy/grpc.git"
   },
   "workspaces": [
     "packages/*",

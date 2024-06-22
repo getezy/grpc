@@ -1,2 +1,2 @@
 export * from './status.enum';
-export * from './tls-type.enum';
+export * from './method-type.enum';
