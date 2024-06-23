@@ -25,7 +25,8 @@
   "license": "MPL-2.0",
   "dependencies": {
     "@grpc/grpc-js": "1.10.9",
-    "lodash.get": "4.4.2"
+    "lodash.get": "4.4.2",
+    "type-fest": "4.20.1"
   },
   "peerDependencies": {
     "@getezy/grpc-core": "2.0.0"

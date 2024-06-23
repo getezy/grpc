@@ -15,3 +15,10 @@ export type GrpcRequestOptions = {
    */
   method: string;
 };
+
+export type GrpcRequestData = Record<string, unknown>;
+
+export type GrpcRequest<Data extends GrpcRequestData = GrpcRequestData> = {
+  options: GrpcRequestOptions;
+  data: Data;
+};

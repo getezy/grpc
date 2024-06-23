@@ -14,6 +14,6 @@ export interface GrpcChannelOptions {
   sslTargetNameOverride?: string;
 }
 
-export interface GrpcProtocolOptions extends AbstractProtocolOptions {
+export type GrpcProtocolOptions = AbstractProtocolOptions & {
   channelOptions?: GrpcChannelOptions;
-}
+};

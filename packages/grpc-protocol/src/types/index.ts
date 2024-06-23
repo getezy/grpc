@@ -1,2 +1,3 @@
 export * from './service-client-constructor.guard';
-export * from './grpc-protocol-options.type';
+export * from './protocol-options.type';
+export * from './metadata.type';
