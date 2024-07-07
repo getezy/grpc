@@ -2,8 +2,8 @@ import * as fs from 'node:fs';
 
 import {
   AbstractProtocol,
+  GrpcMetadata,
   GrpcRequest,
-  GrpcRequestData,
   GrpcRequestOptions,
   GrpcResponse,
   GrpcResponseData,
@@ -17,14 +17,9 @@ import lodashGet from 'lodash.get';
 import { SetOptional } from 'type-fest';
 
 import { GrpcMetadataParser } from './metadata-parser';
-import {
-  GrpcChannelOptions,
-  GrpcMetadata,
-  GrpcMetadataValue,
-  GrpcProtocolOptions,
-  isServiceClientConstructor,
-} from './types';
-export class GrpcProtocol extends AbstractProtocol<GrpcMetadataValue, GrpcMetadata> {
+import { GrpcChannelOptions, GrpcProtocolOptions, isServiceClientConstructor } from './types';
+
+export class GrpcProtocol extends AbstractProtocol<grpc.Metadata, grpc.MetadataValue> {
   private readonly grpcObject: grpc.GrpcObject;
   private readonly channelOptions?: GrpcChannelOptions;
 
@@ -39,15 +34,15 @@ export class GrpcProtocol extends AbstractProtocol<GrpcMetadataValue, GrpcMetada
   }
 
   public invokeUnaryRequest<
-    Request extends GrpcRequestData = GrpcRequestData,
+    Request extends GrpcRequest = GrpcRequest,
     Response extends GrpcResponseData = GrpcResponseData,
-  >(request: GrpcRequest<Request>) {
-    const client = this.createClient(request.options);
+  >(options: GrpcRequestOptions, request: Request, metadata?: GrpcMetadata<grpc.MetadataValue>) {
+    const client = this.createClient(options);
 
     return new Promise<GrpcResponse<Response>>((resolve) => {
-      const call = client[request.options.method](
+      const call = client[options.method](
         request.data,
-        this.parseMetadata(metadata),
+        this.metadataParser.parse(metadata),
         (error: grpc.ServerErrorResponse, response: Response) => {
           if (error) {
             return resolve({

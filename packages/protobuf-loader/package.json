@@ -32,12 +32,12 @@
   "devDependencies": {
     "@getezy/eslint-config-grpc": "*",
     "@vitest/coverage-v8": "1.6.0",
-    "eslint": "9.5.0",
+    "eslint": "9.6.0",
     "eslint-plugin-prettier": "5.1.3",
-    "eslint-plugin-simple-import-sort": "12.1.0",
+    "eslint-plugin-simple-import-sort": "12.1.1",
     "prettier": "3.3.2",
     "tsup": "8.1.0",
-    "typescript": "5.5.2",
+    "typescript": "5.5.3",
     "typescript-eslint": "8.0.0-alpha.28",
     "vitest": "1.6.0"
   }
